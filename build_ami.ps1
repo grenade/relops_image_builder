@@ -1,7 +1,7 @@
 if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)) {
   $processStartInfo = New-Object System.Diagnostics.ProcessStartInfo
   $processStartInfo.FileName = 'powershell.exe'
-  $processStartInfo.Arguments = @('-File', $myInvocation.MyCommand.Definition)
+  $processStartInfo.Arguments = @('-NoProfile', '-File', $myInvocation.MyCommand.Definition)
   $processStartInfo.Verb = 'RunAs'
   $processStartInfo.WindowStyle = 'Hidden'
   $processStartInfo.CreateNoWindow = $true

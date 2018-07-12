@@ -1,0 +1,21 @@
+provisionerId: aws-provisioner-v1
+workerType: gecko-1-b-win2012
+priority: highest
+retries: 0
+created: '2018-07-12T13:24:40.250Z'
+deadline: '2018-07-12T14:24:40.250Z'
+expires: '2019-05-29T09:26:31.354Z'
+scopes: []
+payload:
+  maxRunTime: 7200
+  command:
+    - wget -O .\build_ami.ps1 https://raw.githubusercontent.com/grenade/relops_image_builder/master/build_ami.ps1
+    - powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\build_ami.ps1
+    #- powershell -NoProfile -Command "Start-Process powershell -Verb RunAs -ArgumentList @('-NoProfile', '-File', '.\build_ami.ps1')"
+metadata:
+  name: iso-to-ami
+  description: build an ami from an iso
+  owner: grenade@mozilla.com
+  source: 'https://bugzilla.mozilla.org/show_bug.cgi?id=1474548'
+tags: {}
+extra: {}
