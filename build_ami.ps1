@@ -11,12 +11,10 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
   $process = New-Object System.Diagnostics.Process
   $process.StartInfo = $processStartInfo
   $process.Start() | Out-Null
-  $standardOutput = $process.StandardOutput.ReadToEnd()
-  $standardError = $process.StandardError.ReadToEnd()
+  $process.StandardOutput.ReadToEnd()
   $process.WaitForExit()
-  $standardOutput
   if ($process.ExitCode) {
-    $standardError
+    $process.StandardError.ReadToEnd()
     ('process exit code: {0}' -f $process.ExitCode)
   }
   exit
