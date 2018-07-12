@@ -10,7 +10,7 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
   $processStartInfo.UseShellExecute = $false
   $process = New-Object System.Diagnostics.Process
   $process.StartInfo = $processStartInfo
-  $process.Start() | Out-Null
+  $process.Start()
   $process.StandardOutput.ReadToEnd()
   $process.WaitForExit()
   if ($process.ExitCode) {
