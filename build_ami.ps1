@@ -1,9 +1,25 @@
 if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)) {
-   $process = New-Object System.Diagnostics.ProcessStartInfo 'PowerShell';
-   $process.Arguments = $myInvocation.MyCommand.Definition;
-   $process.Verb = 'runas';
-   [System.Diagnostics.Process]::Start($process);
-   exit
+  $processStartInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $processStartInfo.FileName = 'powershell.exe'
+  $processStartInfo.Arguments = @('-File', $myInvocation.MyCommand.Definition)
+  $processStartInfo.Verb = 'RunAs'
+  $processStartInfo.WindowStyle = 'Hidden'
+  $processStartInfo.CreateNoWindow = $true
+  $processStartInfo.RedirectStandardError = $true
+  $processStartInfo.RedirectStandardOutput = $true
+  $processStartInfo.UseShellExecute = $false
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = $processStartInfo
+  $process.Start() | Out-Null
+  $standardOutput = $process.StandardOutput.ReadToEnd()
+  $standardError = $process.StandardError.ReadToEnd()
+  $process.WaitForExit()
+  $standardOutput
+  if ($process.ExitCode) {
+    $standardError
+    ('process exit code: {0}' -f $process.ExitCode)
+  }
+  exit
 }
 $iso_url='https://software-download.microsoft.com/pr/Win10_1803_EnglishInternational_x64.iso?t=080ddbfb-902c-4c57-beb8-bc1c57378ed5&e=1531303905&h=265b8b68c521570bc0fb860c7a5f3590'
 $iso_path='.\Win10_1803_EnglishInternational_x64.iso'
