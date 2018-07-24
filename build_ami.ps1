@@ -24,6 +24,7 @@ $image_name = 'Win10_1803_EnglishInternational_x64'
 $image_edition = 'Core'
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
+$image_description = ('{0} {1} edition. captured on {2}' -f $image_name, $image_edition, $image_capture_date)
 
 $aws_region = 'us-west-2'
 $s3_bucket = 'windows-ami-builder'
@@ -102,4 +103,24 @@ if (-not (Get-S3Object -BucketName $s3_bucket -Key $s3_vhd_key -Region $aws_regi
   }
 } else {
   Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $s3_bucket, $s3_vhd_key) -ForegroundColor DarkGray
+}
+
+$bucket = New-Object Amazon.EC2.Model.UserBucket
+$bucket.S3Bucket = $s3_bucket
+$bucket.S3Key = $s3_vhd_key
+
+$windowsContainer = New-Object Amazon.EC2.Model.ImageDiskContainer
+$windowsContainer.Format = 'VHD'
+$windowsContainer.UserBucket = $bucket
+
+$import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL')
+while (@('pending', 'validating', 'deleting').Contains($import_task_status.StatusMessage)) {
+  $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $import_task_status.ImportTaskId)
+  Write-Host -object ('image import in progress. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+  Start-Sleep -Seconds 1
+}
+if ($import_task_status.ImageId) {
+  Write-Host -object ('image import complete. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+} else {
+  Write-Host -object ('image import failed. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor Red
 }
