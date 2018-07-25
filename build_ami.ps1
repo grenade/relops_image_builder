@@ -29,8 +29,9 @@ $image_description = ('{0} {1} edition. captured on {2}' -f $image_name, $image_
 $aws_region = 'us-west-2'
 $s3_bucket = 'windows-ami-builder'
 $s3_vhd_key = ('vhd/{0}-{1}.vhdx' -f $image_name, $image_edition)
+$s3_iso_key = ('iso/{0}.iso' -f $image_name)
 
-$iso_url = ('https://s3-{0}.amazonaws.com/{1}/iso/{2}.iso' -f $aws_region, $s3_bucket, $image_name)
+$iso_url = ('https://s3-{0}.amazonaws.com/{1}/{2}' -f $aws_region, $s3_bucket, $s3_iso_key)
 $iso_path = ('.\{0}.iso' -f $image_name)
 
 $cwi_url = 'https://raw.githubusercontent.com/mozilla-platform-ops/relops_image_builder/master/Convert-WindowsImage.ps1'
@@ -114,13 +115,13 @@ $windowsContainer.Format = 'VHD'
 $windowsContainer.UserBucket = $bucket
 
 $import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL')
-while (@('pending', 'validating', 'deleting').Contains($import_task_status.StatusMessage)) {
+while (@('pending', 'validating', 'deleting').Contains($import_task_status.StatusMessage) -or ($import_task_status.Status -eq 'deleting')) {
   $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $import_task_status.ImportTaskId)
   Write-Host -object ('image import in progress. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
-  Start-Sleep -Seconds 1
+  Start-Sleep -Seconds 3
 }
 if ($import_task_status.ImageId) {
-  Write-Host -object ('image import complete. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+  Write-Host -object ('image import complete. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
 } else {
-  Write-Host -object ('image import failed. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor Red
+  Write-Host -object ('image import failed. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor Red
 }
