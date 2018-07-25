@@ -26,9 +26,12 @@ $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
 $image_description = ('{0} {1} edition. captured on {2}' -f $image_name, $image_edition, $image_capture_date)
 
+$vhd_format = 'VHD'
+$vhd_partition_style = 'MBR'
+
 $aws_region = 'us-west-2'
 $s3_bucket = 'windows-ami-builder'
-$s3_vhd_key = ('vhd/{0}-{1}.vhdx' -f $image_name, $image_edition)
+$s3_vhd_key = ('{0}/{1}-{2}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition)
 $s3_iso_key = ('iso/{0}.iso' -f $image_name)
 
 $iso_url = ('https://s3-{0}.amazonaws.com/{1}/{2}' -f $aws_region, $s3_bucket, $s3_iso_key)
@@ -37,7 +40,7 @@ $iso_path = ('.\{0}.iso' -f $image_name)
 $cwi_url = 'https://raw.githubusercontent.com/mozilla-platform-ops/relops_image_builder/master/Convert-WindowsImage.ps1'
 $cwi_path = '.\Convert-WindowsImage.ps1'
 
-$vhd_path = ('.\{0}-{1}.vhdx' -f $image_name, $image_edition)
+$vhd_path = ('.\{0}-{1}.{2}' -f $image_name, $image_edition, $vhd_format.ToLower())
 
 Set-ExecutionPolicy RemoteSigned
 
@@ -85,7 +88,7 @@ if (-not (Test-Path -Path $cwi_path -ErrorAction SilentlyContinue)) {
 if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VHDPath $vhd_path -Edition $image_edition
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $vhd_format -VhdPartitionStyle $vhd_partition_style -Edition $image_edition
     Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
@@ -114,13 +117,13 @@ $windowsContainer = New-Object Amazon.EC2.Model.ImageDiskContainer
 $windowsContainer.Format = 'VHD'
 $windowsContainer.UserBucket = $bucket
 
-$import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL')
-Write-Host -object ('image import in progress. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
-while (@('pending', 'validating', 'deleting').Contains($import_task_status.StatusMessage) -or ($import_task_status.Status -eq 'deleting')) {
+$import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL' -Hypervisor 'xen')
+Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+while (($ImportStatus.Status -ne 'completed') -and ($ImportStatus.Status -ne 'deleted')) {
   $last_status = $import_task_status
   $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $last_status.ImportTaskId)
   if (($import_task_status.Status -ne $last_status.Status) -or ($import_task_status.StatusMessage -ne $last_status.StatusMessage)) {
-    Write-Host -object ('image import in progress. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+    Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
   }
   Start-Sleep -Seconds 1
 }
