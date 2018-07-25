@@ -125,7 +125,8 @@ while (@('pending', 'validating', 'deleting').Contains($import_task_status.Statu
   Start-Sleep -Seconds 1
 }
 if ($import_task_status.ImageId) {
-  Write-Host -object ('image import complete. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+  Write-Host -object ('image import complete. image id: {0}, status: {1}; {2}' -f $import_task_status.ImageId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
 } else {
   Write-Host -object ('image import failed. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor Red
 }
+Write-Host -object $import_task_status -ForegroundColor DarkGray
