@@ -129,4 +129,4 @@ if ($import_task_status.ImageId) {
 } else {
   Write-Host -object ('image import failed. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor Red
 }
-Write-Host -object $import_task_status -ForegroundColor DarkGray
+Write-Host -object ($import_task_status | Format-List | Out-String) -ForegroundColor DarkGray
