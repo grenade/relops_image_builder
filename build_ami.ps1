@@ -115,10 +115,14 @@ $windowsContainer.Format = 'VHD'
 $windowsContainer.UserBucket = $bucket
 
 $import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL')
+Write-Host -object ('image import in progress. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
 while (@('pending', 'validating', 'deleting').Contains($import_task_status.StatusMessage) -or ($import_task_status.Status -eq 'deleting')) {
-  $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $import_task_status.ImportTaskId)
-  Write-Host -object ('image import in progress. status: {0} {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
-  Start-Sleep -Seconds 3
+  $last_status = $import_task_status
+  $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $last_status.ImportTaskId)
+  if (($import_task_status.Status -ne $last_status.Status) -or ($import_task_status.StatusMessage -ne $last_status.StatusMessage)) {
+    Write-Host -object ('image import in progress. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+  }
+  Start-Sleep -Seconds 1
 }
 if ($import_task_status.ImageId) {
   Write-Host -object ('image import complete. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
