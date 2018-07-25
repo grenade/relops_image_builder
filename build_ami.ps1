@@ -119,13 +119,13 @@ $windowsContainer.UserBucket = $bucket
 
 $import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL' -Hypervisor 'xen')
 Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
-while (($ImportStatus.Status -ne 'completed') -and ($ImportStatus.Status -ne 'deleted')) {
+while (($ImportStatus.Status -ne 'completed') -and ($ImportStatus.Status -ne 'deleted') -and ($ImportStatus.StatusMessage -notmatch 'ServerError') -and ($ImportStatus.StatusMessage -notmatch 'ClientError')) {
   $last_status = $import_task_status
   $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $last_status.ImportTaskId)
   if (($import_task_status.Status -ne $last_status.Status) -or ($import_task_status.StatusMessage -ne $last_status.StatusMessage)) {
     Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
   }
-  Start-Sleep -Seconds 1
+  Start-Sleep -Milliseconds 500
 }
 if ($import_task_status.ImageId) {
   Write-Host -object ('image import complete. image id: {0}, status: {1}; {2}' -f $import_task_status.ImageId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
