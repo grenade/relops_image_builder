@@ -24,14 +24,15 @@ $image_name = 'Win10_1803_EnglishInternational_x64'
 $image_edition = 'Core'
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
-$image_description = ('{0} {1} edition. captured on {2}' -f $image_name, $image_edition, $image_capture_date)
 
 $vhd_format = 'VHD'
 $vhd_partition_style = 'MBR'
 
+$image_description = ('{0} edition: {1}, partition style: {2}. captured on {3}' -f $image_name, $image_edition, $vhd_partition_style, $image_capture_date)
+
 $aws_region = 'us-west-2'
 $s3_bucket = 'windows-ami-builder'
-$s3_vhd_key = ('{0}/{1}-{2}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition)
+$s3_vhd_key = ('{0}/{1}-{2}-{3}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition, $vhd_partition_style.ToLower())
 $s3_iso_key = ('iso/{0}.iso' -f $image_name)
 
 $iso_url = ('https://s3-{0}.amazonaws.com/{1}/{2}' -f $aws_region, $s3_bucket, $s3_iso_key)
@@ -40,7 +41,7 @@ $iso_path = ('.\{0}.iso' -f $image_name)
 $cwi_url = 'https://raw.githubusercontent.com/mozilla-platform-ops/relops_image_builder/master/Convert-WindowsImage.ps1'
 $cwi_path = '.\Convert-WindowsImage.ps1'
 
-$vhd_path = ('.\{0}-{1}.{2}' -f $image_name, $image_edition, $vhd_format.ToLower())
+$vhd_path = ('.\{0}-{1}-{2}.{3}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $vhd_format.ToLower())
 
 Set-ExecutionPolicy RemoteSigned
 
