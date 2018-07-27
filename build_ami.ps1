@@ -31,6 +31,7 @@ $vhd_partition_style = 'MBR'
 $image_description = ('{0} edition: {1}, partition style: {2}. captured on {3}' -f $image_name, $image_edition, $vhd_partition_style, $image_capture_date)
 
 $aws_region = 'us-west-2'
+$aws_availability_zone = ('{0}a' -f $aws_region)
 $s3_bucket = 'windows-ami-builder'
 $s3_vhd_key = ('{0}/{1}-{2}-{3}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition, $vhd_partition_style.ToLower())
 $s3_iso_key = ('iso/{0}.iso' -f $image_name)
@@ -41,6 +42,8 @@ $cwi_url = 'https://raw.githubusercontent.com/mozilla-platform-ops/relops_image_
 $cwi_path = '.\Convert-WindowsImage.ps1'
 
 $vhd_path = ('.\{0}-{1}-{2}.{3}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $vhd_format.ToLower())
+
+$expected_volume_count = 3
 
 Set-ExecutionPolicy RemoteSigned
 
@@ -109,27 +112,28 @@ if (-not (Get-S3Object -BucketName $s3_bucket -Key $s3_vhd_key -Region $aws_regi
   Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $s3_bucket, $s3_vhd_key) -ForegroundColor DarkGray
 }
 
-$bucket = New-Object Amazon.EC2.Model.UserBucket
-$bucket.S3Bucket = $s3_bucket
-$bucket.S3Key = $s3_vhd_key
+$snaphot_import_task_id = @(Import-EC2Snapshot -DiskContainer_Format $vhd_format -DiskContainer_S3Bucket $s3_bucket -DiskContainer_S3Key $s3_vhd_key)[0].ImportTaskId
+Write-Host -object ('snapshot import task started with id {0}' -f $snaphot_import_task_id) -ForegroundColor White
 
-$windowsContainer = New-Object Amazon.EC2.Model.ImageDiskContainer
-$windowsContainer.Format = 'VHD'
-$windowsContainer.UserBucket = $bucket
-
-$import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Linux' -Hypervisor 'xen' -Force)
-Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
-while (($import_task_status.Status -ne 'completed') -and ($import_task_status.Status -ne 'deleted') -and (-not $import_task_status.StatusMessage.StartsWith('ServerError')) -and (-not $import_task_status.StatusMessage.StartsWith('ClientError'))) {
-  $last_status = $import_task_status
-  $import_task_status = (Get-EC2ImportImageTask -ImportTaskId $last_status.ImportTaskId)
-  if (($import_task_status.Status -ne $last_status.Status) -or ($import_task_status.StatusMessage -ne $last_status.StatusMessage)) {
-    Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
+# todo: query the vhd to determine how many volumes it contains
+$snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $snaphot_import_task_id)))))
+$snapshots_import_status = ('{0}/{1} snapshots created' -f $snapshots.length, $expected_volume_count)
+Write-Host -object $snapshots_import_status -ForegroundColor DarkGray
+while (@($snapshots | Where-Object { $_.State -eq 'completed '}).length -lt $expected_volume_count) {
+  $old_snapshots_import_status = $snapshots_import_status
+  $snapshots_import_status = ('{0}/{1} snapshots created' -f $snapshots.length, $expected_volume_count)
+  if ($snapshots_import_status -ne $old_snapshots_import_status) {
+    Write-Host -object $snapshots_import_status -ForegroundColor DarkGray
+    foreach ($snapshot in $snapshots) {
+      Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor DarkGray
+    }
   }
-  Start-Sleep -Milliseconds 500
+  Start-Sleep -Seconds 10
+  $snapshots = (Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $snaphot_import_task_id)))))
 }
-if ($import_task_status.ImageId) {
-  Write-Host -object ('image import complete. image id: {0}, status: {1}; {2}' -f $import_task_status.ImageId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
-} else {
-  Write-Host -object ('image import failed. status: {0}; {1}' -f $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor Red
+
+foreach ($snapshot in $snapshots) {
+  Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
+  #$volume = (New-EC2Volume -SnapshotId $snapshot.SnapshotId -Size $snapshot.VolumeSize -AvailabilityZone $aws_availability_zone -VolumeType 'gp2' -Encrypted $false)
+  Remove-EC2Snapshot -SnapshotId $snapshot.SnapshotId -PassThru -Force
 }
-Write-Host -object ($import_task_status | Format-List | Out-String) -ForegroundColor DarkGray
