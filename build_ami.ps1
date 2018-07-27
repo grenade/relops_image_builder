@@ -117,7 +117,7 @@ $windowsContainer = New-Object Amazon.EC2.Model.ImageDiskContainer
 $windowsContainer.Format = 'VHD'
 $windowsContainer.UserBucket = $bucket
 
-$import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Windows' -LicenseType 'BYOL' -Hypervisor 'xen')
+$import_task_status = (Import-EC2Image -DiskContainer $windowsContainer -ClientToken $image_key -Description $image_description -Architecture 'x86_64' -Platform 'Linux' -Hypervisor 'xen' -Force)
 Write-Host -object ('image import in progress with task id: {0}, status: {1}; {2}' -f $import_task_status.ImportTaskId, $import_task_status.Status, $import_task_status.StatusMessage) -ForegroundColor White
 while (($import_task_status.Status -ne 'completed') -and ($import_task_status.Status -ne 'deleted') -and (-not $import_task_status.StatusMessage.StartsWith('ServerError')) -and (-not $import_task_status.StatusMessage.StartsWith('ClientError'))) {
   $last_status = $import_task_status
