@@ -110,9 +110,11 @@ if (-not (Get-S3Object -BucketName $s3_bucket -Key $s3_vhd_key -Region $aws_regi
   Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $s3_bucket, $s3_vhd_key) -ForegroundColor DarkGray
 }
 
+# import the vhd as an ec2 snapshot
 $import_task_status = @(Import-EC2Snapshot -DiskContainer_Format $vhd_format -DiskContainer_S3Bucket $s3_bucket -DiskContainer_S3Key $s3_vhd_key -Description $image_description)[0]
 Write-Host -object ('snapshot import task in progress with id: {0}, progress: {1}%, status: {2}; {3}' -f $import_task_status.ImportTaskId, $import_task_status.SnapshotTaskDetail.Progress,  $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
 
+# wait for snapshot import completion
 while (($import_task_status.SnapshotTaskDetail.Status -ne 'completed') -and ($import_task_status.SnapshotTaskDetail.Status -ne 'deleted') -and (-not $import_task_status.SnapshotTaskDetail.StatusMessage.StartsWith('ServerError')) -and (-not $import_task_status.SnapshotTaskDetail.StatusMessage.StartsWith('ClientError'))) {
   $last_status = $import_task_status
   $import_task_status = @(Get-EC2ImportSnapshotTask -ImportTaskId $last_status.ImportTaskId)[0]
@@ -127,12 +129,16 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
 } else {
   Write-Host -object ('snapshot import complete. snapshot id: {0}, status: {1}; {2}' -f $import_task_status.SnapshotTaskDetail.SnapshotId, $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
   Write-Host -object ($import_task_status.SnapshotTaskDetail | Format-List | Out-String) -ForegroundColor DarkGray
+
+  # create an ec2 volume for each snapshot
   $snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $import_task_status.ImportTaskId)))))
   foreach ($snapshot in $snapshots) {
     Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor White
     Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
     $volume = (New-EC2Volume -SnapshotId $snapshot.SnapshotId -Size $snapshot.VolumeSize -AvailabilityZone $aws_availability_zone -VolumeType 'gp2' -Encrypted $false)
     Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f  $volume.VolumeId,  $volume.State) -ForegroundColor White
+
+    # wait for volume creation to complete
     while ($volume.State -ne 'available') {
       $last_volume_state = $volume.State
       $volume = (Get-EC2Volume -VolumeId $volume.VolumeId)
@@ -143,4 +149,13 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
     }
     Write-Host -object ($volume | Format-List | Out-String) -ForegroundColor DarkGray
   }
+
+  # todo:
+  # - create a new ec2 linux instance instatiated with any pre-existing ami
+  # - detach volumes and delete them and their associated snapshots
+  # - attach volumes created from vhd import
+  # - boot instance with an autounattend file or sysprep configuration to complete windows install, set an administrator password
+  # - install ec2config, enable userdata execution
+  # - shut down instance and capture an ami
+  # - delete snapshots and volumes created during vhd import
 }
