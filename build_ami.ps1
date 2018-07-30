@@ -43,8 +43,6 @@ $cwi_path = '.\Convert-WindowsImage.ps1'
 
 $vhd_path = ('.\{0}-{1}-{2}.{3}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $vhd_format.ToLower())
 
-$expected_volume_count = 3
-
 Set-ExecutionPolicy RemoteSigned
 
 # install aws powershell module if not installed
@@ -112,28 +110,37 @@ if (-not (Get-S3Object -BucketName $s3_bucket -Key $s3_vhd_key -Region $aws_regi
   Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $s3_bucket, $s3_vhd_key) -ForegroundColor DarkGray
 }
 
-$snaphot_import_task_id = @(Import-EC2Snapshot -DiskContainer_Format $vhd_format -DiskContainer_S3Bucket $s3_bucket -DiskContainer_S3Key $s3_vhd_key)[0].ImportTaskId
-Write-Host -object ('snapshot import task started with id {0}' -f $snaphot_import_task_id) -ForegroundColor White
+$import_task_status = @(Import-EC2Snapshot -DiskContainer_Format $vhd_format -DiskContainer_S3Bucket $s3_bucket -DiskContainer_S3Key $s3_vhd_key -Description $image_description)[0]
+Write-Host -object ('snapshot import task in progress with id: {0}, progress: {1}%, status: {2}; {3}' -f $import_task_status.ImportTaskId, $import_task_status.SnapshotTaskDetail.Progress,  $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
 
-# todo: query the vhd to determine how many volumes it contains
-$snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $snaphot_import_task_id)))))
-$snapshots_import_status = ('{0}/{1} snapshots created' -f $snapshots.length, $expected_volume_count)
-Write-Host -object $snapshots_import_status -ForegroundColor DarkGray
-while (@($snapshots | Where-Object { $_.State -eq 'completed '}).length -lt $expected_volume_count) {
-  $old_snapshots_import_status = $snapshots_import_status
-  $snapshots_import_status = ('{0}/{1} snapshots created' -f $snapshots.length, $expected_volume_count)
-  if ($snapshots_import_status -ne $old_snapshots_import_status) {
-    Write-Host -object $snapshots_import_status -ForegroundColor DarkGray
-    foreach ($snapshot in $snapshots) {
-      Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor DarkGray
-    }
+while (($import_task_status.SnapshotTaskDetail.Status -ne 'completed') -and ($import_task_status.SnapshotTaskDetail.Status -ne 'deleted') -and (-not $import_task_status.SnapshotTaskDetail.StatusMessage.StartsWith('ServerError')) -and (-not $import_task_status.SnapshotTaskDetail.StatusMessage.StartsWith('ClientError'))) {
+  $last_status = $import_task_status
+  $import_task_status = @(Get-EC2ImportSnapshotTask -ImportTaskId $last_status.ImportTaskId)[0]
+  if (($import_task_status.SnapshotTaskDetail.Status -ne $last_status.SnapshotTaskDetail.Status) -or ($import_task_status.SnapshotTaskDetail.StatusMessage -ne $last_status.SnapshotTaskDetail.StatusMessage)) {
+    Write-Host -object ('snapshot import task in progress with id: {0}, progress: {1}%, status: {2}; {3}' -f $import_task_status.ImportTaskId, $import_task_status.SnapshotTaskDetail.Progress,  $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
   }
-  Start-Sleep -Seconds 10
-  $snapshots = (Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $snaphot_import_task_id)))))
-}
-
-foreach ($snapshot in $snapshots) {
-  Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
-  #$volume = (New-EC2Volume -SnapshotId $snapshot.SnapshotId -Size $snapshot.VolumeSize -AvailabilityZone $aws_availability_zone -VolumeType 'gp2' -Encrypted $false)
-  Remove-EC2Snapshot -SnapshotId $snapshot.SnapshotId -PassThru -Force
+  Start-Sleep -Milliseconds 500
+} 
+if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
+  Write-Host -object ('snapshot import failed. status: {0}; {1}' -f $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor Red
+  Write-Host -object ($import_task_status.SnapshotTaskDetail | Format-List | Out-String) -ForegroundColor Red
+} else {
+  Write-Host -object ('snapshot import complete. snapshot id: {0}, status: {1}; {2}' -f $import_task_status.SnapshotTaskDetail.SnapshotId, $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
+  Write-Host -object ($import_task_status.SnapshotTaskDetail | Format-List | Out-String) -ForegroundColor DarkGray
+  $snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $import_task_status.ImportTaskId)))))
+  foreach ($snapshot in $snapshots) {
+    Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor White
+    Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
+    $volume = (New-EC2Volume -SnapshotId $snapshot.SnapshotId -Size $snapshot.VolumeSize -AvailabilityZone $aws_availability_zone -VolumeType 'gp2' -Encrypted $false)
+    Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f  $volume.VolumeId,  $volume.State) -ForegroundColor White
+    while ($volume.State -ne 'available') {
+      $last_volume_state = $volume.State
+      $volume = (Get-EC2Volume -VolumeId $volume.VolumeId)
+      if ($last_volume_state -ne $volume.State) {
+        Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f  $volume.VolumeId,  $volume.State) -ForegroundColor White
+      }
+      Start-Sleep -Milliseconds 500
+    }
+    Write-Host -object ($volume | Format-List | Out-String) -ForegroundColor DarkGray
+  }
 }
