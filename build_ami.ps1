@@ -20,6 +20,8 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
   exit
 }
 
+$ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
+$ec2_security_groups = @('ssh-only', 'rdp-only')
 $image_name = 'Win10_1803_EnglishInternational_x64'
 $image_edition = 'Core'
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
@@ -132,6 +134,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
 
   # create an ec2 volume for each snapshot
   $snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $import_task_status.ImportTaskId)))))
+  $volumes = @()
   foreach ($snapshot in $snapshots) {
     Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor White
     Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
@@ -147,13 +150,56 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
       }
       Start-Sleep -Milliseconds 500
     }
+    $volumes += $volume
     Write-Host -object ($volume | Format-List | Out-String) -ForegroundColor DarkGray
+  }
+  $volume_zero = $volumes[0].VolumeId
+
+  # create a new ec2 linux instance instatiated with a pre-existing ami
+  $amazon_linux_ami_id = (Get-EC2Image -Owner 'amazon' -Filter @((New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Amazon Linux 2 AMI * HVM gp2'))))))[0].ImageId
+  $instance = (New-EC2Instance -ImageId $amazon_linux_ami_id -AvailabilityZone $aws_availability_zone -MinCount 1 -MaxCount 1 -InstanceType 'c4.4xlarge' -KeyName $ec2_key_pair -SecurityGroup $ec2_security_groups).Instances[0]
+  $instance_id = $instance.InstanceId
+  Write-Host -object ('instance {0} created with ami {1}' -f  $instance_id, $amazon_linux_ami_id) -ForegroundColor White
+  while ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'running') {
+    Write-Host -object 'waiting for instance to start' -ForegroundColor DarkGray
+    Start-Sleep -Seconds 5
+  }
+  $device_zero = (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings[0].DeviceName
+  Stop-EC2Instance -InstanceId $instance_id -ForceStop
+  while ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') {
+    Write-Host -object 'waiting for instance to stop' -ForegroundColor DarkGray
+    Start-Sleep -Seconds 5
+  }
+
+  # detach and delete volumes and associated snapshots
+  foreach ($block_device_mapping in (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings) {
+    try {
+      $detach_volume = (Dismount-EC2Volume -InstanceId $instance_id -Device $block_device_mapping.DeviceName -VolumeId $block_device_mapping.Ebs.VolumeId -ForceDismount:$true)
+      Write-Host -object $detach_volume -ForegroundColor DarkGray
+      Write-Host -object ('detached volume {0} from {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $instance_id, $block_device_mapping.DeviceName) -ForegroundColor White
+    } catch {
+      Write-Host -object ('failed to detach volume {0} from {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $instance_id, $block_device_mapping.DeviceName) -ForegroundColor Red
+      Write-Host -object $_.Exception.Message -ForegroundColor Red
+      exit
+    }
+    while ((Get-EC2Volume -VolumeId $block_device_mapping.Ebs.VolumeId).State -ne 'available') {
+      Start-Sleep -Milliseconds 500
+    }
+    Remove-EC2Volume -VolumeId $block_device_mapping.Ebs.VolumeId -PassThru -Force
+  }
+
+  # attach volume from vhd import (todo: handle attachment of multiple volumes)
+  try {
+    $attach_volume = (Add-EC2Volume -InstanceId $instance_id -VolumeId $volume_zero -Device $device_zero -Force)
+    Write-Host -object $attach_volume -ForegroundColor DarkGray
+    Write-Host -object ('attached volume {0} to {1}{2}' -f $volume_zero, $instance_id, $device_zero) -ForegroundColor White
+  } catch {
+    Write-Host -object ('failed to attach volume {0} to {1}{2}' -f  $volume_zero, $instance_id, $device_zero) -ForegroundColor Red
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
+    exit
   }
 
   # todo:
-  # - create a new ec2 linux instance instatiated with any pre-existing ami
-  # - detach volumes and delete them and their associated snapshots
-  # - attach volumes created from vhd import
   # - boot instance with an autounattend file or sysprep configuration to complete windows install, set an administrator password
   # - install ec2config, enable userdata execution
   # - shut down instance and capture an ami
