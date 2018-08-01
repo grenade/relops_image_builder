@@ -215,6 +215,16 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
     exit
   }
 
+  Start-EC2Instance -InstanceId $instance_id
+  while ((Get-ChildItem -Path ('.\{0}-*.jpg' -f $instance_id)).length -lt 20) {
+    try {
+      [io.file]::WriteAllBytes(('.\{0}-{1}.jpg' -f $instance_id, [DateTime]::UtcNow.ToString("yyyyMMddHHmmss")), [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
+    } catch {
+      Write-Host -object $_.Exception.Message -ForegroundColor Red
+    }
+    Start-Sleep -Seconds 30
+  }
+
   # todo:
   # - boot instance with an autounattend file or sysprep configuration to complete windows install, set an administrator password
   # - install ec2config, enable userdata execution
