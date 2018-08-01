@@ -24,6 +24,7 @@ $ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
 $ec2_security_groups = @('ssh-only', 'rdp-only')
 $image_name = 'Win10_1803_EnglishInternational_x64'
 $image_edition = 'Core'
+$image_locale = 'en-US'
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
 
@@ -35,15 +36,18 @@ $image_description = ('{0} edition: {1}, partition style: {2}. captured on {3}' 
 $aws_region = 'us-west-2'
 $aws_availability_zone = ('{0}a' -f $aws_region)
 $s3_bucket = 'windows-ami-builder'
-$s3_vhd_key = ('{0}/{1}-{2}-{3}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition, $vhd_partition_style.ToLower())
+$s3_vhd_key = ('{0}/{1}-{2}-{3}-{4}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition, $vhd_partition_style.ToLower(), $image_locale)
 $s3_iso_key = ('iso/{0}.iso' -f $image_name)
 
 $iso_path = ('.\{0}.iso' -f $image_name)
 
-$cwi_url = 'https://raw.githubusercontent.com/mozilla-platform-ops/relops_image_builder/master/Convert-WindowsImage.ps1'
+$cwi_url = 'https://raw.githubusercontent.com/grenade/relops_image_builder/master/Convert-WindowsImage.ps1'
 $cwi_path = '.\Convert-WindowsImage.ps1'
 
-$vhd_path = ('.\{0}-{1}-{2}.{3}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $vhd_format.ToLower())
+$ua_url = ('https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/windows10-{0}.xml' -f $image_locale)
+$ua_path = '.\Autounattend.xml'
+
+$vhd_path = ('.\{0}-{1}-{2}-{3}.{4}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $image_locale, $vhd_format.ToLower())
 
 Set-ExecutionPolicy RemoteSigned
 
@@ -87,11 +91,23 @@ if (-not (Test-Path -Path $cwi_path -ErrorAction SilentlyContinue)) {
   Write-Host -object ('vhd conversion script detected at: {0}' -f $cwi_path) -ForegroundColor DarkGray
 }
 
+# download the unattend file if not on the local filesystem
+if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
+  try {
+    (New-Object Net.WebClient).DownloadFile($ua_url, $ua_path)
+    Write-Host -object ('downloaded {0} to {1}' -f $ua_url, $ua_path) -ForegroundColor White
+  } catch {
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
+  }
+} else {
+  Write-Host -object ('unattend file detected at: {0}' -f $ua_path) -ForegroundColor DarkGray
+}
+
 # create the vhd(x) file if it is not on the local filesystem
 if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $vhd_format -VhdPartitionStyle $vhd_partition_style -Edition $image_edition
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $vhd_format -VhdPartitionStyle $vhd_partition_style -Edition $image_edition -UnattendPath $ua_path
     Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
