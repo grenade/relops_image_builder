@@ -24,7 +24,7 @@ $ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
 $ec2_security_groups = @('ssh-only', 'rdp-only')
 $image_name = 'Win10_1803_EnglishInternational_x64'
 $image_edition = 'Core'
-$image_locale = 'en-US'
+$image_locale = 'en-GB'
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
 
@@ -45,7 +45,7 @@ $cwi_url = 'https://raw.githubusercontent.com/grenade/relops_image_builder/maste
 $cwi_path = '.\Convert-WindowsImage.ps1'
 
 $ua_url = ('https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/windows10-{0}.xml' -f $image_locale)
-$ua_path = '.\Autounattend.xml'
+$ua_path = ('.\Autounattend.{0}.xml' -f $image_locale)
 
 $vhd_path = ('.\{0}-{1}-{2}-{3}.{4}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $image_locale, $vhd_format.ToLower())
 
