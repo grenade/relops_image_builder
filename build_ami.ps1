@@ -216,7 +216,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   }
 
   Start-EC2Instance -InstanceId $instance_id
-  while ((Get-ChildItem -Path ('.\{0}-*.jpg' -f $instance_id)).length -lt 20) {
+  while (@(Get-ChildItem -Path ('.\{0}-*.jpg' -f $instance_id)).length -lt 20) {
     try {
       [io.file]::WriteAllBytes(('.\{0}-{1}.jpg' -f $instance_id, [DateTime]::UtcNow.ToString("yyyyMMddHHmmss")), [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
     } catch {
