@@ -22,9 +22,9 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
 
 $ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
 $ec2_security_groups = @('ssh-only', 'rdp-only')
-$image_name = 'Win10_1803_EnglishInternational_x64'
+$image_name = 'en_windows_10_business_edition_version_1803_updated_jul_2018_x64_dvd_12612769'
 $image_edition = 'Core'
-$image_locale = 'en-GB'
+$image_locale = 'en-US'
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
 
