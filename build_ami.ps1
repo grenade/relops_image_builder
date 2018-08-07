@@ -108,9 +108,15 @@ if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
     Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $vhd_format -VhdPartitionStyle $vhd_partition_style -Edition $image_edition -UnattendPath (Resolve-Path -Path $ua_path).Path
-    Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
+    if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
+      Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
+    } else {
+      Write-Host -object ('failed to create {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor Red
+      exit
+    }
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
+    exit
   }
 } else {
   Write-Host -object ('vhd detected at: {0}' -f $vhd_path) -ForegroundColor DarkGray
