@@ -224,9 +224,13 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   }
 
   Start-EC2Instance -InstanceId $instance_id
+  $screenshot_folder_path = ('.\{0}' -f $instance_id)
+  New-Item -ItemType Directory -Force -Path $screenshot_folder_path
   while (@(Get-ChildItem -Path ('.\{0}-*.jpg' -f $instance_id)).length -lt 20) {
     try {
-      [io.file]::WriteAllBytes(('.\{0}-{1}.jpg' -f $instance_id, [DateTime]::UtcNow.ToString("yyyyMMddHHmmss")), [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
+      $screenshot_path = ('{0}\{1}.jpg' -f $screenshot_folder_path, [DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))
+      [io.file]::WriteAllBytes($screenshot_path, [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
+      Write-Host -object ('screenshot saved to {0}' -f $screenshot_path) -ForegroundColor DarkGray
     } catch {
       Write-Host -object $_.Exception.Message -ForegroundColor Red
     }
@@ -237,5 +241,5 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   # - boot instance with an autounattend file or sysprep configuration to complete windows install, set an administrator password
   # - install ec2config, enable userdata execution
   # - shut down instance and capture an ami
-  # - delete snapshots and volumes created during vhd import
+  # - delete instances, snapshots and volumes created during vhd import
 }
