@@ -238,8 +238,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   }
 
   # todo:
-  # - boot instance with an autounattend file or sysprep configuration to complete windows install, set an administrator password
-  # - install ec2config, enable userdata execution
+  # - install ena driver, ec2config, enable userdata execution
   # - shut down instance and capture an ami
   # - delete instances, snapshots and volumes created during vhd import
 }
