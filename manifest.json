@@ -1,0 +1,28 @@
+[
+  {
+    "os": "Windows",
+    "version": 1803,
+    "build": {
+      "major": 10,
+      "minor": 0,
+      "release": 17134,
+      "build": 1
+    },
+    "update": "March 2018",
+    "changelog": "https://changewindows.org/build/redstone4/17134/pc",
+    "edition": "Professional",
+    "language": "en-US",
+    "iso": {
+      "bucket": "windows-ami-builder",
+      "key": "iso/Win10_1803_EnglishInternational_x64.iso"
+    },
+    "vhd": {
+      "bucket": "windows-ami-builder",
+      "key": "vhd/Windows_10_Professional_1803_17134_en-US_x64_MBR.vhd"
+    },
+    "unattend": "https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/Windows10-Professional-en-US.xml",
+    "partition": "MBR",
+    "format": "VHD",
+    "architecture": "x64"
+  }
+]

@@ -22,32 +22,28 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
 
 $ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
 $ec2_security_groups = @('ssh-only', 'rdp-only')
-$image_name = 'en_windows_10_business_edition_version_1803_updated_jul_2018_x64_dvd_12612769'
-$image_edition = 'Core'
-$image_locale = 'en-US'
+
+$manifest = (Invoke-WebRequest -Uri ('https://raw.githubusercontent.com/grenade/relops_image_builder/master/manifest.json?{0}' -f [Guid]::NewGuid()) -UseBasicParsing | ConvertFrom-Json)
+$config = @($manifest | Where-Object {
+  $_.os -eq 'Windows' -and
+  $_.build.major -eq 10 -and
+  $_.build.release -eq 17134 -and
+  $_.version -eq 1803 -and
+  $_.edition -eq 'Professional' -and
+  $_.language -eq 'en-US'
+})[0]
+
 $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
-$image_key = ('{0}-{1}-{2}' -f $image_name, $image_edition, $image_capture_date)
-
-$vhd_format = 'VHD'
-$vhd_partition_style = 'MBR'
-
-$image_description = ('{0} edition: {1}, partition style: {2}. captured on {3}' -f $image_name, $image_edition, $vhd_partition_style, $image_capture_date)
+$image_description = ('{0} {1} ({2}) - edition: {3}, language: {4}, partition: {5}, captured: {6}' -f $config.os, $config.build.major, $config.version, $config.edition, $config.language, $config.partition, $image_capture_date)
 
 $aws_region = 'us-west-2'
 $aws_availability_zone = ('{0}a' -f $aws_region)
-$s3_bucket = 'windows-ami-builder'
-$s3_vhd_key = ('{0}/{1}-{2}-{3}-{4}.{0}' -f $vhd_format.ToLower(), $image_name, $image_edition, $vhd_partition_style.ToLower(), $image_locale)
-$s3_iso_key = ('iso/{0}.iso' -f $image_name)
-
-$iso_path = ('.\{0}.iso' -f $image_name)
 
 $cwi_url = 'https://raw.githubusercontent.com/grenade/relops_image_builder/master/Convert-WindowsImage.ps1'
-$cwi_path = '.\Convert-WindowsImage.ps1'
-
-$ua_url = ('https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/windows10-{0}.xml' -f $image_locale)
-$ua_path = ('.\Autounattend.{0}.xml' -f $image_locale)
-
-$vhd_path = ('.\{0}-{1}-{2}-{3}.{4}' -f $image_name, $image_edition, $vhd_partition_style.ToLower(), $image_locale, $vhd_format.ToLower())
+$cwi_path = ('.\{0}' -f [System.IO.Path]::GetFileName($cwi_url))
+$ua_path = ('.\{0}' -f [System.IO.Path]::GetFileName($config.unattend))
+$iso_path = ('.\{0}' -f [System.IO.Path]::GetFileName($config.iso.key))
+$vhd_path = ('.\{0}' -f [System.IO.Path]::GetFileName($config.vhd.key))
 
 Set-ExecutionPolicy RemoteSigned
 
@@ -70,8 +66,8 @@ Initialize-AWSDefaultConfiguration -ProfileName WindowsAmiBuilder -Region $aws_r
 # download the iso file if not on the local filesystem
 if (-not (Test-Path -Path $iso_path -ErrorAction SilentlyContinue)) {
   try {
-    Copy-S3Object -BucketName $s3_bucket -Key $s3_iso_key -LocalFile $iso_path -Region $aws_region
-    Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f $iso_path, $s3_bucket, $s3_iso_key) -ForegroundColor White
+    Copy-S3Object -BucketName $config.iso.bucket -Key $config.iso.key -LocalFile $iso_path -Region $aws_region
+    Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f $iso_path, $config.iso.bucket, $config.iso.key) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
   }
@@ -94,8 +90,8 @@ if (-not (Test-Path -Path $cwi_path -ErrorAction SilentlyContinue)) {
 # download the unattend file if not on the local filesystem
 if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
   try {
-    (New-Object Net.WebClient).DownloadFile($ua_url, $ua_path)
-    Write-Host -object ('downloaded {0} to {1}' -f $ua_url, $ua_path) -ForegroundColor White
+    (New-Object Net.WebClient).DownloadFile($config.unattend, $ua_path)
+    Write-Host -object ('downloaded {0} to {1}' -f $config.unattend, $ua_path) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
   }
@@ -107,7 +103,7 @@ if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
 if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $vhd_format -VhdPartitionStyle $vhd_partition_style -Edition $image_edition -UnattendPath (Resolve-Path -Path $ua_path).Path
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path
     if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
       Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
     } else {
@@ -123,19 +119,19 @@ if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
 }
 
 # upload the vhd(x) file if it is not in the s3 bucket
-if (-not (Get-S3Object -BucketName $s3_bucket -Key $s3_vhd_key -Region $aws_region)) {
+if (-not (Get-S3Object -BucketName $config.vhd.bucket -Key $config.vhd.key -Region $aws_region)) {
   try {
-    Write-S3Object -BucketName $s3_bucket -File $vhd_path -Key $s3_vhd_key
-    Write-Host -object ('uploaded {0} to bucket {1} with key {2}' -f $vhd_path, $s3_bucket, $s3_vhd_key) -ForegroundColor White
+    Write-S3Object -BucketName $config.vhd.bucket -File $vhd_path -Key $config.vhd.key
+    Write-Host -object ('uploaded {0} to bucket {1} with key {2}' -f $vhd_path, $config.vhd.bucket, $config.vhd.key) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
   }
 } else {
-  Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $s3_bucket, $s3_vhd_key) -ForegroundColor DarkGray
+  Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $config.vhd.bucket, $config.vhd.key) -ForegroundColor DarkGray
 }
 
 # import the vhd as an ec2 snapshot
-$import_task_status = @(Import-EC2Snapshot -DiskContainer_Format $vhd_format -DiskContainer_S3Bucket $s3_bucket -DiskContainer_S3Key $s3_vhd_key -Description $image_description)[0]
+$import_task_status = @(Import-EC2Snapshot -DiskContainer_Format $config.format -DiskContainer_S3Bucket $config.vhd.bucket -DiskContainer_S3Key $config.vhd.key -Description $image_description)[0]
 Write-Host -object ('snapshot import task in progress with id: {0}, progress: {1}%, status: {2}; {3}' -f $import_task_status.ImportTaskId, $import_task_status.SnapshotTaskDetail.Progress,  $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
 
 # wait for snapshot import completion
@@ -158,6 +154,12 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   $snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $import_task_status.ImportTaskId)))))
   $volumes = @()
   foreach ($snapshot in $snapshots) {
+    $snapshot = (Get-EC2Snapshot -SnapshotId $snapshot.SnapshotId)
+    while ($snapshot.State -ne 'completed') {
+      Write-Host -object 'waiting for snapshot availability' -ForegroundColor DarkGray
+      Start-Sleep -Seconds 1
+      $snapshot = (Get-EC2Snapshot -SnapshotId $snapshot.SnapshotId)
+    }
     Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor White
     Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
     $volume = (New-EC2Volume -SnapshotId $snapshot.SnapshotId -Size $snapshot.VolumeSize -AvailabilityZone $aws_availability_zone -VolumeType 'gp2' -Encrypted $false)
@@ -228,7 +230,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
     } catch {
       Write-Host -object $_.Exception.Message -ForegroundColor Red
     }
-    Start-Sleep -Seconds 30
+    Start-Sleep -Seconds 60
   }
 
   # todo:
