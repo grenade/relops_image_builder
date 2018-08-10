@@ -150,8 +150,11 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   Write-Host -object ('snapshot import complete. snapshot id: {0}, status: {1}; {2}' -f $import_task_status.SnapshotTaskDetail.SnapshotId, $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
   Write-Host -object ($import_task_status.SnapshotTaskDetail | Format-List | Out-String) -ForegroundColor DarkGray
 
-  # create an ec2 volume for each snapshot
   $snapshots = @(Get-EC2Snapshot -Filter (New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Created by AWS-VMImport service for {0}' -f $import_task_status.ImportTaskId)))))
+  Write-Host -object ('{0} snapshot{1} extracted from {2}' -f  $snapshots.length, $(if ($snapshots.length -gt 1) { 's' } else { '' }), $config.format) -ForegroundColor White
+  Write-Host -object ($snapshots | Format-Table | Out-String) -ForegroundColor DarkGray
+
+  # create an ec2 volume for each snapshot
   $volumes = @()
   foreach ($snapshot in $snapshots) {
     $snapshot = (Get-EC2Snapshot -SnapshotId $snapshot.SnapshotId)
@@ -161,16 +164,15 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
       $snapshot = (Get-EC2Snapshot -SnapshotId $snapshot.SnapshotId)
     }
     Write-Host -object ('snapshot id: {0}, state: {1}, progress: {2}, size: {3}gb' -f $snapshot.SnapshotId, $snapshot.State, $snapshot.Progress, $snapshot.VolumeSize) -ForegroundColor White
-    Write-Host -object ($snapshot | Format-List | Out-String) -ForegroundColor DarkGray
     $volume = (New-EC2Volume -SnapshotId $snapshot.SnapshotId -Size $snapshot.VolumeSize -AvailabilityZone $aws_availability_zone -VolumeType 'gp2' -Encrypted $false)
-    Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f  $volume.VolumeId,  $volume.State) -ForegroundColor White
+    Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f  $volume.VolumeId, $volume.State) -ForegroundColor White
 
     # wait for volume creation to complete
     while ($volume.State -ne 'available') {
       $last_volume_state = $volume.State
       $volume = (Get-EC2Volume -VolumeId $volume.VolumeId)
       if ($last_volume_state -ne $volume.State) {
-        Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f  $volume.VolumeId,  $volume.State) -ForegroundColor White
+        Write-Host -object ('volume creation in progress. volume id: {0}, state: {1}' -f $volume.VolumeId, $volume.State) -ForegroundColor White
       }
       Start-Sleep -Milliseconds 500
     }
@@ -226,7 +228,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   Start-EC2Instance -InstanceId $instance_id
   $screenshot_folder_path = ('.\{0}' -f $instance_id)
   New-Item -ItemType Directory -Force -Path $screenshot_folder_path
-  while (@(Get-ChildItem -Path ('.\{0}-*.jpg' -f $instance_id)).length -lt 20) {
+  while (@(Get-ChildItem -Path ('{0}\*.jpg' -f $screenshot_folder_path)).length -lt 20) {
     try {
       $screenshot_path = ('{0}\{1}.jpg' -f $screenshot_folder_path, [DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))
       [io.file]::WriteAllBytes($screenshot_path, [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
