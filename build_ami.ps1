@@ -240,7 +240,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   }
 
   # todo:
-  # - install ena driver, ec2config, enable userdata execution
+  # - install ena driver, network driver, ec2config, enable userdata execution
   # - shut down instance and capture an ami
   # - delete instances, snapshots and volumes created during vhd import
 }
