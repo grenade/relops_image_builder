@@ -209,23 +209,9 @@
         <ProtectYourPC>1</ProtectYourPC>
       </OOBE>
       <UserAccounts>
-        <!--
-        <LocalAccounts>
-          <LocalAccount wcm:action="add">
-            <Password>
-              <Value></Value>
-              <PlainText>true</PlainText>
-            </Password>
-            <Description></Description>
-            <DisplayName></DisplayName>
-            <Group>Administrators</Group>
-            <Name></Name>
-          </LocalAccount>
-        </LocalAccounts>
-        -->
         <AdministratorPassword>
-            <Value>pH2W202C4^zoWb</Value>
-            <PlainText>true</PlainText>
+          <Value>pH2W202C4^zoWb</Value>
+          <PlainText>true</PlainText>
         </AdministratorPassword>
       </UserAccounts>
       <RegisteredOrganization>Mozilla Corporation</RegisteredOrganization>
@@ -249,6 +235,24 @@
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>cmd /C wmic useraccount where name="" set PasswordExpires=false</CommandLine>
           <Description>Password Never Expires</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>4</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>xcopy C:\AWSPVDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
+          <Description>Extract PV network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>xcopy C:\AwsEnaNetworkDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
+          <Description>Extract ENA network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>6</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>xcopy C:\EC2Install.zip\*.* %TEMP%\ /y /c</CommandLine>
+          <Description>Extract EC2Config installer</Description>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -273,23 +277,9 @@
         <ProtectYourPC>1</ProtectYourPC>
       </OOBE>
       <UserAccounts>
-        <!--
-        <LocalAccounts>
-          <LocalAccount wcm:action="add">
-            <Password>
-              <Value></Value>
-              <PlainText>true</PlainText>
-            </Password>
-            <Description></Description>
-            <DisplayName></DisplayName>
-            <Group>Administrators</Group>
-            <Name></Name>
-          </LocalAccount>
-        </LocalAccounts>
-        -->
         <AdministratorPassword>
-            <Value>pH2W202C4^zoWb</Value>
-            <PlainText>true</PlainText>
+          <Value>pH2W202C4^zoWb</Value>
+          <PlainText>true</PlainText>
         </AdministratorPassword>
       </UserAccounts>
       <RegisteredOrganization>Mozilla Corporation</RegisteredOrganization>
@@ -313,6 +303,24 @@
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>cmd /C wmic useraccount where name="" set PasswordExpires=false</CommandLine>
           <Description>Password Never Expires</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>4</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>xcopy C:\AWSPVDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
+          <Description>Extract PV network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>xcopy C:\AwsEnaNetworkDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
+          <Description>Extract ENA network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>6</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>xcopy C:\EC2Install.zip\*.* %TEMP%\ /y /c</CommandLine>
+          <Description>Extract EC2Config installer</Description>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>

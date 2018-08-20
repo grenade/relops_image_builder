@@ -99,11 +99,28 @@ if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
   Write-Host -object ('unattend file detected at: {0}' -f $ua_path) -ForegroundColor DarkGray
 }
 
+# download package files if not on the local filesystem
+$packages = @()
+foreach ($package in $config.packages) {
+  $local_path = (Resolve-Path -Path ('.\{0}' -f [System.IO.Path]::GetFileName($package.key)))
+  $packages += $local_path
+  if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
+    try {
+      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $aws_region
+      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f $local_path, $package.bucket, $package.key) -ForegroundColor White
+    } catch {
+      Write-Host -object $_.Exception.Message -ForegroundColor Red
+    }
+  } else {
+    Write-Host -object ('package file detected at: {0}' -f $local_path) -ForegroundColor DarkGray
+  }
+}
+
 # create the vhd(x) file if it is not on the local filesystem
 if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -Package $packages
     if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
       Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
     } else {
@@ -181,7 +198,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   }
   $volume_zero = $volumes[0].VolumeId
 
-  # create a new ec2 linux instance instatiated with a pre-existing ami
+  # create a new ec2 linux instance instantiated with a pre-existing ami
   $amazon_linux_ami_id = (Get-EC2Image -Owner 'amazon' -Filter @((New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Amazon Linux 2 AMI * HVM gp2'))))))[0].ImageId
   $instance = (New-EC2Instance -ImageId $amazon_linux_ami_id -AvailabilityZone $aws_availability_zone -MinCount 1 -MaxCount 1 -InstanceType 'c4.4xlarge' -KeyName $ec2_key_pair -SecurityGroup $ec2_security_groups).Instances[0]
   $instance_id = $instance.InstanceId
@@ -223,6 +240,13 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
     Write-Host -object ('failed to attach volume {0} to {1}{2}' -f  $volume_zero, $instance_id, $device_zero) -ForegroundColor Red
     Write-Host -object $_.Exception.Message -ForegroundColor Red
     exit
+  }
+
+  try {
+    Edit-EC2InstanceAttribute -InstanceId $instance_id -EnaSupport $true
+    Write-Host -object ('enabled ena support attribute on instance {0}' -f $instance_id) -ForegroundColor DarkGray
+  } catch {
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
   }
 
   Start-EC2Instance -InstanceId $instance_id

@@ -23,6 +23,20 @@
     "unattend": "https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/Windows10-Professional-en-US.xml",
     "partition": "MBR",
     "format": "VHD",
-    "architecture": "x64"
+    "architecture": "x64",
+    "packages": [
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AWSPVDriver.zip"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AwsEnaNetworkDriver.zip"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "package/EC2Install.zip"
+      }
+    ]
   }
 ]
