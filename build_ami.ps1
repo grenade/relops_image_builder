@@ -139,9 +139,15 @@ foreach ($package in $config.packages) {
     Write-Host -object ('package file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
   }
   try {
-    $mount_path_temp_package = (Join-Path -Path $mount_path_temp -ChildPath ([System.IO.Path]::GetFileName($package.key)))
-    Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $mount_path_temp_package
-    Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_temp_package) -ForegroundColor White
+    if ((([System.IO.Path]::GetExtension($package.key)) -eq '.zip') -and ($package.target)) {
+      $mount_path_temp_package = (Join-Path -Path $mount_path -ChildPath $package.target)
+      Expand-Archive -Path $local_path -DestinationPath $mount_path_temp_package
+      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_temp_package) -ForegroundColor White
+    } else {
+      $mount_path_temp_package = (Join-Path -Path $mount_path_temp -ChildPath ([System.IO.Path]::GetFileName($package.key)))
+      Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $mount_path_temp_package
+      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_temp_package) -ForegroundColor White
+    }
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
     throw

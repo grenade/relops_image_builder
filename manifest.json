@@ -27,15 +27,18 @@
     "packages": [
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/AWSPVDriver.zip"
+        "key": "driver/AWSPVDriver.zip",
+        "target": "temp\\AWSPVDriver"
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/AwsEnaNetworkDriver.zip"
+        "key": "driver/AwsEnaNetworkDriver.zip",
+        "target": "temp\\AwsEnaNetworkDriver"
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "package/EC2Install.zip"
+        "key": "package/EC2Install.zip",
+        "target": "temp"
       }
     ]
   }
