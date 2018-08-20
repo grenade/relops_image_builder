@@ -105,7 +105,7 @@ foreach ($package in $config.packages) {
   $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($package.key))
   if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
     try {
-      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile (Resolve-Path -Path $local_path) -Region $aws_region
+      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $aws_region
       $packages += (Resolve-Path -Path $local_path)
       Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $package.bucket, $package.key) -ForegroundColor White
     } catch {
