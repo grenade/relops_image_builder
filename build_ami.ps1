@@ -126,11 +126,10 @@ if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
       Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
     } else {
       Write-Host -object ('failed to create {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor Red
-      exit
     }
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
-    exit
+    throw
   }
 } else {
   Write-Host -object ('vhd detected at: {0}' -f $vhd_path) -ForegroundColor DarkGray
