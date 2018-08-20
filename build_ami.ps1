@@ -102,17 +102,18 @@ if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
 # download package files if not on the local filesystem
 $packages = @()
 foreach ($package in $config.packages) {
-  $local_path = (Resolve-Path -Path ('.\{0}' -f [System.IO.Path]::GetFileName($package.key)))
-  $packages += $local_path
+  $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($package.key))
   if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
     try {
-      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $aws_region
-      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f $local_path, $package.bucket, $package.key) -ForegroundColor White
+      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile (Resolve-Path -Path $local_path) -Region $aws_region
+      $packages += (Resolve-Path -Path $local_path)
+      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $package.bucket, $package.key) -ForegroundColor White
     } catch {
       Write-Host -object $_.Exception.Message -ForegroundColor Red
     }
   } else {
-    Write-Host -object ('package file detected at: {0}' -f $local_path) -ForegroundColor DarkGray
+    $packages += (Resolve-Path -Path $local_path)
+    Write-Host -object ('package file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
   }
 }
 
