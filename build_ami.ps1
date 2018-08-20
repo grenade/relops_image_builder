@@ -99,29 +99,11 @@ if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
   Write-Host -object ('unattend file detected at: {0}' -f $ua_path) -ForegroundColor DarkGray
 }
 
-# download package files if not on the local filesystem
-$packages = @()
-foreach ($package in $config.packages) {
-  $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($package.key))
-  if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
-    try {
-      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $aws_region
-      $packages += (Resolve-Path -Path $local_path)
-      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $package.bucket, $package.key) -ForegroundColor White
-    } catch {
-      Write-Host -object $_.Exception.Message -ForegroundColor Red
-    }
-  } else {
-    $packages += (Resolve-Path -Path $local_path)
-    Write-Host -object ('package file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
-  }
-}
-
 # create the vhd(x) file if it is not on the local filesystem
 if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -Package $packages
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path
     if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
       Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
     } else {
@@ -133,6 +115,46 @@ if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   }
 } else {
   Write-Host -object ('vhd detected at: {0}' -f $vhd_path) -ForegroundColor DarkGray
+}
+
+# mount the vhd and create a temp directory
+$mount_path = (Join-Path -Path $env:SystemDrive -ChildPath ([System.Guid]::NewGuid().Guid))
+$mount_path_temp = (Join-Path -Path $mount_path -ChildPath 'temp')
+New-Item -Path $mount_path -ItemType directory -force
+Mount-WindowsImage -ImagePath $vhd_path -Path $mount_path -Index 1
+New-Item -Path $mount_path_temp -ItemType directory -force
+
+# download package files if not on the local filesystem
+foreach ($package in $config.packages) {
+  $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($package.key))
+  if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
+    try {
+      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $aws_region
+      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $package.bucket, $package.key) -ForegroundColor White
+    } catch {
+      Write-Host -object $_.Exception.Message -ForegroundColor Red
+      throw
+    }
+  } else {
+    Write-Host -object ('package file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
+  }
+  try {
+    $mount_path_temp_package = (Join-Path -Path $mount_path_temp -ChildPath ([System.IO.Path]::GetFileName($package.key)))
+    Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $mount_path_temp_package
+    Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_temp_package) -ForegroundColor White
+  } catch {
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
+    throw
+  }
+}
+# unmount the vhd, save it and remove the mount point
+try {
+  Dismount-WindowsImage -Path $mount_path -Save
+  Write-Host -object ('dismount of {0} from {1} complete' -f $vhd_path, $mount_path) -ForegroundColor White
+  Remove-Item -Path $mount_path -Force
+} catch {
+  Write-Host -object $_.Exception.Message -ForegroundColor Red
+  throw
 }
 
 # upload the vhd(x) file if it is not in the s3 bucket
