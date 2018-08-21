@@ -257,19 +257,13 @@
         <SynchronousCommand wcm:action="add">
           <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Create tail file from PV driver setup log</Description>
-          <Order>8</Order>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Wait -Tail 30 | Out-File 'C:\Windows\Temp\AWSPVDriverSetup-install-tail.log'"</CommandLine>
-          <RequiresUserInput>false</RequiresUserInput>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
           <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
-          <Order>9</Order>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install-tail.log</CommandLine>
+          <Order>8</Order>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
@@ -343,19 +337,13 @@
         <SynchronousCommand wcm:action="add">
           <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Create tail file from PV driver setup log</Description>
-          <Order>8</Order>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Wait -Tail 30 | Out-File 'C:\Windows\Temp\AWSPVDriverSetup-install-tail.log'"</CommandLine>
-          <RequiresUserInput>false</RequiresUserInput>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
           <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
-          <Order>9</Order>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install-tail.log</CommandLine>
+          <Order>8</Order>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
