@@ -263,7 +263,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>Create tail file from PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Wait -Tail 30 | Out-File 'C:\Windows\Temp\AWSPVDriverSetup-install-tail.log'"</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -349,7 +349,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>Create tail file from PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Wait -Tail 30 | Out-File 'C:\Windows\Temp\AWSPVDriverSetup-install-tail.log'"</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
