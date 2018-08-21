@@ -119,10 +119,8 @@ if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
 
 # mount the vhd and create a temp directory
 $mount_path = (Join-Path -Path $env:SystemDrive -ChildPath ([System.Guid]::NewGuid().Guid))
-$mount_path_temp = (Join-Path -Path $mount_path -ChildPath 'temp')
 New-Item -Path $mount_path -ItemType directory -force
 Mount-WindowsImage -ImagePath $vhd_path -Path $mount_path -Index 1
-New-Item -Path $mount_path_temp -ItemType directory -force
 
 # download package files if not on the local filesystem
 foreach ($package in $config.packages) {
@@ -138,15 +136,14 @@ foreach ($package in $config.packages) {
   } else {
     Write-Host -object ('package file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
   }
+  $mount_path_package_target = (Join-Path -Path $mount_path -ChildPath $package.target)
   try {
-    if ((([System.IO.Path]::GetExtension($package.key)) -eq '.zip') -and ($package.target)) {
-      $mount_path_temp_package = (Join-Path -Path $mount_path -ChildPath $package.target)
-      Expand-Archive -Path $local_path -DestinationPath $mount_path_temp_package
-      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_temp_package) -ForegroundColor White
+    if ($package.extract) {
+      Expand-Archive -Path $local_path -DestinationPath $mount_path_package_target
+      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_package_target) -ForegroundColor White
     } else {
-      $mount_path_temp_package = (Join-Path -Path $mount_path_temp -ChildPath ([System.IO.Path]::GetFileName($package.key)))
-      Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $mount_path_temp_package
-      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_temp_package) -ForegroundColor White
+      Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $mount_path_package_target
+      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_package_target) -ForegroundColor White
     }
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
@@ -292,7 +289,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   }
 
   # todo:
-  # - install ena driver, network driver, ec2config, enable userdata execution
+  # - configure ec2config: enable userdata execution
   # - shut down instance and capture an ami
   # - delete instances, snapshots and volumes created during vhd import
 }

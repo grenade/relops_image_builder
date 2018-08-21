@@ -239,20 +239,20 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>xcopy C:\AWSPVDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
-          <Description>Extract PV network driver</Description>
+          <CommandLine>powershell -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
+          <Description>Install ENA network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>xcopy C:\AwsEnaNetworkDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
-          <Description>Extract ENA network driver</Description>
+          <CommandLine>C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
+          <Description>Install EC2Config</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>xcopy C:\EC2Install.zip\*.* %TEMP%\ /y /c</CommandLine>
-          <Description>Extract EC2Config installer</Description>
+          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /passive /forcerestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <Description>Install PV network driver</Description>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -307,20 +307,20 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>xcopy C:\AWSPVDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
-          <Description>Extract PV network driver</Description>
+          <CommandLine>powershell -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
+          <Description>Install ENA network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>xcopy C:\AwsEnaNetworkDriver.zip\*.* %TEMP%\ /y /c</CommandLine>
-          <Description>Extract ENA network driver</Description>
+          <CommandLine>C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
+          <Description>Install EC2Config</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>xcopy C:\EC2Install.zip\*.* %TEMP%\ /y /c</CommandLine>
-          <Description>Extract EC2Config installer</Description>
+          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /passive /forcerestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <Description>Install PV network driver</Description>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
