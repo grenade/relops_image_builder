@@ -264,7 +264,20 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   } catch {
     Write-Host -object ('failed to attach volume {0} to {1}{2}' -f  $volume_zero, $instance_id, $device_zero) -ForegroundColor Red
     Write-Host -object $_.Exception.Message -ForegroundColor Red
-    exit
+    throw
+  }
+
+  # set DeleteOnTermination to true for all attached volumes
+  try {
+    $block_device_mappings = (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings
+    for ($i=0; $i -lt $block_device_mappings.length; $i++) {
+      $block_device_mappings[$i].Ebs.DeleteOnTermination=$true
+    }
+    Edit-EC2InstanceAttribute -InstanceId $instance_id -BlockDeviceMapping $block_device_mappings
+    Write-Host -object 'DeleteOnTermination set to true for attached volumes' -ForegroundColor White
+  } catch {
+    Write-Host -object 'failed to set DeleteOnTermination for attached volumes' -ForegroundColor Red
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
   }
 
   try {
