@@ -261,9 +261,9 @@
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>FirstLogonCommandsStep8Working</Description>
+          <Description>Open device manager to use screenshots for debugging</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
+          <CommandLine>cmd /c devmgmt.msc</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
@@ -341,9 +341,9 @@
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>FirstLogonCommandsStep8Working</Description>
+          <Description>Open device manager to use screenshots for debugging</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
+          <CommandLine>cmd /c devmgmt.msc</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
