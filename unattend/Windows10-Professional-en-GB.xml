@@ -221,7 +221,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>FirstLogonCommandsStep1Working</Description>
           <Order>1</Order>
-          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
+          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -263,7 +263,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>FirstLogonCommandsStep8Working</Description>
           <Order>8</Order>
-          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
+          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
@@ -301,7 +301,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>FirstLogonCommandsStep1Working</Description>
           <Order>1</Order>
-          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
+          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -343,7 +343,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>FirstLogonCommandsStep8Working</Description>
           <Order>8</Order>
-          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
+          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
