@@ -180,11 +180,11 @@
       <CEIPEnabled>0</CEIPEnabled>
     </component>
     <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <ComputerName></ComputerName>
+      <ComputerName>base-win-10-64</ComputerName>
       <ProductKey>W269N-WFGWX-YVC9B-4J6C9-T83GX</ProductKey>
     </component>
     <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <ComputerName></ComputerName>
+      <ComputerName>base-win-10-64</ComputerName>
       <ProductKey>W269N-WFGWX-YVC9B-4J6C9-T83GX</ProductKey>
     </component>
   </settings>
@@ -257,7 +257,7 @@
         <SynchronousCommand wcm:action="add">
           <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /passive /forcerestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -337,7 +337,7 @@
         <SynchronousCommand wcm:action="add">
           <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /passive /forcerestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
