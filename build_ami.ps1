@@ -87,34 +87,34 @@ if (-not (Test-Path -Path $cwi_path -ErrorAction SilentlyContinue)) {
   Write-Host -object ('vhd conversion script detected at: {0}' -f $cwi_path) -ForegroundColor DarkGray
 }
 
-# download the unattend file if not on the local filesystem
-if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
-  try {
-    (New-Object Net.WebClient).DownloadFile($config.unattend, $ua_path)
-    Write-Host -object ('downloaded {0} to {1}' -f $config.unattend, $ua_path) -ForegroundColor White
-  } catch {
-    Write-Host -object $_.Exception.Message -ForegroundColor Red
-  }
-} else {
-  Write-Host -object ('unattend file detected at: {0}' -f $ua_path) -ForegroundColor DarkGray
+# delete the unattend file if it exists
+if (Test-Path -Path $ua_path -ErrorAction SilentlyContinue) {
+  Remove-Item -Path $ua_path -Force
+}
+# download the unattend file
+try {
+  (New-Object Net.WebClient).DownloadFile($config.unattend, $ua_path)
+  Write-Host -object ('downloaded {0} to {1}' -f $config.unattend, $ua_path) -ForegroundColor White
+} catch {
+  Write-Host -object $_.Exception.Message -ForegroundColor Red
 }
 
-# create the vhd(x) file if it is not on the local filesystem
-if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
-  try {
-    . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -RemoteDesktopEnable:$true
-    if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
-      Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
-    } else {
-      Write-Host -object ('failed to create {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor Red
-    }
-  } catch {
-    Write-Host -object $_.Exception.Message -ForegroundColor Red
-    throw
+# delete the vhd(x) file if it exists
+if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
+  Remove-Item -Path $vhd_path -Force
+}
+# create the vhd(x) file
+try {
+  . .\Convert-WindowsImage.ps1
+  Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -RemoteDesktopEnable:$true
+  if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
+    Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
+  } else {
+    Write-Host -object ('failed to create {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor Red
   }
-} else {
-  Write-Host -object ('vhd detected at: {0}' -f $vhd_path) -ForegroundColor DarkGray
+} catch {
+  Write-Host -object $_.Exception.Message -ForegroundColor Red
+  throw
 }
 
 # mount the vhd and create a temp directory
