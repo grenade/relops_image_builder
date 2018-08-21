@@ -286,7 +286,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
         $screenshot_path = ('{0}\{1}.jpg' -f $screenshot_folder_path, $new_screenshot_time.ToString("yyyyMMddHHmmss"))
         [io.file]::WriteAllBytes($screenshot_path, [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
         $last_screenshot_time = $new_screenshot_time
-        Write-Host -object ('screenshot saved to {0}' -f $screenshot_path) -ForegroundColor DarkGray
+        Write-Host -object ('screenshot saved to {0}' -f (Resolve-Path -Path $screenshot_path).Path) -ForegroundColor DarkGray
       } catch {
         Write-Host -object $_.Exception.Message -ForegroundColor Red
       }
