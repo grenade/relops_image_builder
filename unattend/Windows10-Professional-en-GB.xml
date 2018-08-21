@@ -261,9 +261,15 @@
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
+          <Description>Create tail file from PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
+          <Order>9</Order>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install-tail.log</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
@@ -341,9 +347,15 @@
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
+          <Description>Create tail file from PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
+          <Order>9</Order>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install-tail.log</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
