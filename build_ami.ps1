@@ -187,7 +187,7 @@ while (($import_task_status.SnapshotTaskDetail.Status -ne 'completed') -and ($im
   $last_status = $import_task_status
   $import_task_status = @(Get-EC2ImportSnapshotTask -ImportTaskId $last_status.ImportTaskId)[0]
   if ($import_task_status.SnapshotTaskDetail.Progress) {
-    Write-Progress -Activity 'EC2 Import Snapshot' -Status ('{0} {1}' -f $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -PercentComplete $import_task_status.SnapshotTaskDetail.Progress
+    Write-Progress -Activity 'EC2 Import Snapshot' -Status ('{0}% {1} {2}' -f $import_task_status.SnapshotTaskDetail.Progress, $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -PercentComplete $import_task_status.SnapshotTaskDetail.Progress
   }
   if (($import_task_status.SnapshotTaskDetail.Status -ne $last_status.SnapshotTaskDetail.Status) -or ($import_task_status.SnapshotTaskDetail.StatusMessage -ne $last_status.SnapshotTaskDetail.StatusMessage)) {
     Write-Host -object ('snapshot import task in progress with id: {0}, progress: {1}%, status: {2}; {3}' -f $import_task_status.ImportTaskId, $import_task_status.SnapshotTaskDetail.Progress,  $import_task_status.SnapshotTaskDetail.Status, $import_task_status.SnapshotTaskDetail.StatusMessage) -ForegroundColor White
