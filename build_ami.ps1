@@ -277,15 +277,26 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   Start-EC2Instance -InstanceId $instance_id
   $screenshot_folder_path = ('.\{0}' -f $instance_id)
   New-Item -ItemType Directory -Force -Path $screenshot_folder_path
-  while (@(Get-ChildItem -Path ('{0}\*.jpg' -f $screenshot_folder_path)).length -lt 20) {
-    try {
-      $screenshot_path = ('{0}\{1}.jpg' -f $screenshot_folder_path, [DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))
-      [io.file]::WriteAllBytes($screenshot_path, [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
-      Write-Host -object ('screenshot saved to {0}' -f $screenshot_path) -ForegroundColor DarkGray
-    } catch {
-      Write-Host -object $_.Exception.Message -ForegroundColor Red
+  $last_screenshot_time = ((Get-Date).AddSeconds(-60).ToUniversalTime())
+  $last_instance_state = ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name)
+  while ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') {
+    if ($last_screenshot_time -le (Get-Date).ToUniversalTime().AddSeconds(-60)) {
+      try {
+        $new_screenshot_time = ((Get-Date).ToUniversalTime())
+        $screenshot_path = ('{0}\{1}.jpg' -f $screenshot_folder_path, $new_screenshot_time.ToString("yyyyMMddHHmmss"))
+        [io.file]::WriteAllBytes($screenshot_path, [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
+        $last_screenshot_time = $new_screenshot_time
+        Write-Host -object ('screenshot saved to {0}' -f $screenshot_path) -ForegroundColor DarkGray
+      } catch {
+        Write-Host -object $_.Exception.Message -ForegroundColor Red
+      }
     }
-    Start-Sleep -Seconds 60
+    $new_instance_state = ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name)
+    if ($new_instance_state -ne $last_instance_state) {
+      Write-Host -object ('instance {0} state change detected. previous state: {1}, current state: {2}' -f $instance_id, $last_instance_state, $new_instance_state) -ForegroundColor White
+      $last_instance_state = $new_instance_state
+    }
+    Start-Sleep -Seconds 1
   }
 
   # todo:
