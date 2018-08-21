@@ -160,16 +160,22 @@ try {
   throw
 }
 
-# upload the vhd(x) file if it is not in the s3 bucket
-if (-not (Get-S3Object -BucketName $config.vhd.bucket -Key $config.vhd.key -Region $aws_region)) {
+# delete the vhd(x) file from the bucket if it exists
+if (Get-S3Object -BucketName $config.vhd.bucket -Key $config.vhd.key -Region $aws_region) {
   try {
-    Write-S3Object -BucketName $config.vhd.bucket -File $vhd_path -Key $config.vhd.key
-    Write-Host -object ('uploaded {0} to bucket {1} with key {2}' -f $vhd_path, $config.vhd.bucket, $config.vhd.key) -ForegroundColor White
+    Remove-S3Object -BucketName $config.vhd.bucket -Key $config.vhd.key -Region $aws_region -Force
+    Write-Host -object ('removed {0} from bucket {1}' -f $config.vhd.key, $config.vhd.bucket) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
   }
-} else {
-  Write-Host -object ('vhd detected in bucket {0} with key {1}' -f $config.vhd.bucket, $config.vhd.key) -ForegroundColor DarkGray
+}
+
+# upload the vhd(x) file
+try {
+  Write-S3Object -BucketName $config.vhd.bucket -File $vhd_path -Key $config.vhd.key
+  Write-Host -object ('uploaded {0} to bucket {1} with key {2}' -f $vhd_path, $config.vhd.bucket, $config.vhd.key) -ForegroundColor White
+} catch {
+  Write-Host -object $_.Exception.Message -ForegroundColor Red
 }
 
 # import the vhd as an ec2 snapshot
