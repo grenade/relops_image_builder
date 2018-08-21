@@ -219,40 +219,52 @@
       <DisableAutoDaylightTimeSet>true</DisableAutoDaylightTimeSet>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
-          <Description>Control Panel View</Description>
+          <Description>FirstLogonCommandsStep1Working</Description>
           <Order>1</Order>
-          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 0 /f</CommandLine>
-          <RequiresUserInput>true</RequiresUserInput>
+          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
+          <Description>Control Panel View</Description>
           <Order>2</Order>
+          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 0 /f</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>3</Order>
           <Description>Control Panel Icon Size</Description>
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v AllItemsIconView /t REG_DWORD /d 1 /f</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>3</Order>
-          <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /C wmic useraccount where name="" set PasswordExpires=false</CommandLine>
-          <Description>Password Never Expires</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>powershell -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
-          <Description>Install ENA network driver</Description>
+          <CommandLine>netsh advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+          <Description>Allow RDP traffic through firewall</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
+          <Description>Install ENA network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
           <Description>Install EC2Config</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>6</Order>
+          <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /passive /forcerestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Description>FirstLogonCommandsStep8Working</Description>
+          <Order>8</Order>
+          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -287,40 +299,52 @@
       <DisableAutoDaylightTimeSet>true</DisableAutoDaylightTimeSet>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
-          <Description>Control Panel View</Description>
+          <Description>FirstLogonCommandsStep1Working</Description>
           <Order>1</Order>
-          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 0 /f</CommandLine>
-          <RequiresUserInput>true</RequiresUserInput>
+          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
+          <Description>Control Panel View</Description>
           <Order>2</Order>
+          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 0 /f</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>3</Order>
           <Description>Control Panel Icon Size</Description>
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v AllItemsIconView /t REG_DWORD /d 1 /f</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>3</Order>
-          <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /C wmic useraccount where name="" set PasswordExpires=false</CommandLine>
-          <Description>Password Never Expires</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>powershell -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
-          <Description>Install ENA network driver</Description>
+          <CommandLine>netsh advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+          <Description>Allow RDP traffic through firewall</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
+          <Description>Install ENA network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
           <Description>Install EC2Config</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>6</Order>
+          <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /passive /forcerestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Description>FirstLogonCommandsStep8Working</Description>
+          <Order>8</Order>
+          <CommandLine>md C:\Users\Administrator\Desktop\FirstLogonCommandsStep8Working</CommandLine>
+          <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
