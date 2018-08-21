@@ -275,11 +275,11 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
 
   # set DeleteOnTermination to true for all attached volumes
   try {
-    $block_device_mappings = (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings
-    for ($i=0; $i -lt $block_device_mappings.length; $i++) {
-      $block_device_mappings[$i].Ebs.DeleteOnTermination=$true
+    $block_device_mapping_specifications = @()
+    foreach ($block_device_mapping in (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings) {
+      $block_device_mapping_specifications += (New-Object Amazon.EC2.Model.InstanceBlockDeviceMappingSpecification -Property @{ DeviceName = $block_device_mapping.DeviceName; Ebs = New-Object Amazon.EC2.Model.EbsInstanceBlockDeviceSpecification -Property @{ DeleteOnTermination = $true; VolumeId = $block_device_mapping.Ebs.VolumeId } })
     }
-    Edit-EC2InstanceAttribute -InstanceId $instance_id -BlockDeviceMapping $block_device_mappings
+    Edit-EC2InstanceAttribute -InstanceId $instance_id -BlockDeviceMapping $block_device_mapping_specifications
     Write-Host -object 'DeleteOnTermination set to true for attached volumes' -ForegroundColor White
   } catch {
     Write-Host -object 'failed to set DeleteOnTermination for attached volumes' -ForegroundColor Red
