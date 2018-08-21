@@ -103,7 +103,7 @@ if (-not (Test-Path -Path $ua_path -ErrorAction SilentlyContinue)) {
 if (-not (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue)) {
   try {
     . .\Convert-WindowsImage.ps1
-    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -RemoteDesktopEnable:$true
     if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
       Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
     } else {
