@@ -239,7 +239,7 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>netsh advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+          <CommandLine>C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
           <Description>Allow RDP traffic through firewall</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -257,13 +257,13 @@
         <SynchronousCommand wcm:action="add">
           <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Open device manager to use screenshots for debugging</Description>
+          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c devmgmt.msc</CommandLine>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
@@ -319,7 +319,7 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>netsh advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+          <CommandLine>C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
           <Description>Allow RDP traffic through firewall</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -337,13 +337,13 @@
         <SynchronousCommand wcm:action="add">
           <Order>7</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>msiexec /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Open device manager to use screenshots for debugging</Description>
+          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>cmd /c devmgmt.msc</CommandLine>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>
