@@ -239,19 +239,19 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
           <Description>Allow RDP traffic through firewall</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
           <Description>Install ENA network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
           <Description>Install EC2Config</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -263,7 +263,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>Create tail file from PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -325,19 +325,19 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
           <Description>Allow RDP traffic through firewall</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
           <Description>Install ENA network driver</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
           <Description>Install EC2Config</Description>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
@@ -349,7 +349,7 @@
         <SynchronousCommand wcm:action="add">
           <Description>Create tail file from PV driver setup log</Description>
           <Order>8</Order>
-          <CommandLine>powershell -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "[System.IO.File]::WriteAllLines('C:\Windows\Temp\AWSPVDriverSetup-install-tail.log', (Get-Content 'C:\Windows\Temp\AWSPVDriverSetup-install.log' -Tail 30), (New-Object System.Text.UTF8Encoding $false))"</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
