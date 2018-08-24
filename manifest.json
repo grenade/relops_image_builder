@@ -42,6 +42,11 @@
         "key": "package/EC2Install.zip",
         "target": "Windows\\Temp",
         "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/Ec2ConfigurationSettings.xml",
+        "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
       }
     ]
   }
