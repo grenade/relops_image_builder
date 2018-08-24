@@ -219,52 +219,34 @@
       <DisableAutoDaylightTimeSet>true</DisableAutoDaylightTimeSet>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
-          <Description>FirstLogonCommandsStep1Working</Description>
           <Order>1</Order>
-          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
+          <Description>Allow RDP traffic through firewall</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Control Panel View</Description>
           <Order>2</Order>
-          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 0 /f</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install ENA network driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>3</Order>
-          <Description>Control Panel Icon Size</Description>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v AllItemsIconView /t REG_DWORD /d 1 /f</CommandLine>
+          <Description>Install EC2Config</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
-          <Description>Allow RDP traffic through firewall</Description>
+          <Description>Overwrite Ec2ConfigService config</Description>
+          <CommandLine>cmd /c move /y C:\Windows\Temp\Ec2ConfigurationSettings.xml "C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml"</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
-          <Description>Install ENA network driver</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Order>6</Order>
-          <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
-          <Description>Install EC2Config</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Order>7</Order>
-          <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
-          <Order>8</Order>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
-          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -299,52 +281,34 @@
       <DisableAutoDaylightTimeSet>true</DisableAutoDaylightTimeSet>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
-          <Description>FirstLogonCommandsStep1Working</Description>
           <Order>1</Order>
-          <CommandLine>cmd /c md C:\Users\Administrator\Desktop\FirstLogonCommandsStep1Working</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
+          <Description>Allow RDP traffic through firewall</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Description>Control Panel View</Description>
           <Order>2</Order>
-          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 0 /f</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install ENA network driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>3</Order>
-          <Description>Control Panel Icon Size</Description>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v AllItemsIconView /t REG_DWORD /d 1 /f</CommandLine>
+          <Description>Install EC2Config</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\netsh.exe advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
-          <Description>Allow RDP traffic through firewall</Description>
+          <Description>Overwrite Ec2ConfigService config</Description>
+          <CommandLine>cmd /c move /y C:\Windows\Temp\Ec2ConfigurationSettings.xml "C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml"</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
-          <Description>Install ENA network driver</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Order>6</Order>
-          <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
-          <Description>Install EC2Config</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Order>7</Order>
-          <RequiresUserInput>false</RequiresUserInput>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
           <Description>Install PV network driver</Description>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Description>Open notepad to use screenshots for debugging PV driver setup log</Description>
-          <Order>8</Order>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
-          <RequiresUserInput>false</RequiresUserInput>
+          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
