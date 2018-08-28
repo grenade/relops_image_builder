@@ -246,7 +246,7 @@
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Install Citrix PV network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe > C:\Windows\Temp\xennet\install.log</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe /q /se /f > C:\Windows\Temp\xennet\install.log</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
@@ -314,7 +314,7 @@
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Install Citrix PV network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe > C:\Windows\Temp\xennet\install.log</CommandLine>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe /q /se /f > C:\Windows\Temp\xennet\install.log</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
