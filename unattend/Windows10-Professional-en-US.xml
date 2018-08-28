@@ -245,8 +245,14 @@
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Install PV network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <Description>Install Citrix PV network driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe > C:\Windows\Temp\xennet\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>6</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Show Citrix PV network driver install log in screenshots</Description>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\xennet\install.log</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -307,8 +313,14 @@
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Install PV network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\msiexec.exe /i C:\Windows\Temp\AWSPVDriver\AWSPVDriverSetup.msi /qn /norestart /l*v C:\Windows\Temp\AWSPVDriverSetup-install.log</CommandLine>
+          <Description>Install Citrix PV network driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe > C:\Windows\Temp\xennet\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>6</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Show Citrix PV network driver install log in screenshots</Description>
+          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\xennet\install.log</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>

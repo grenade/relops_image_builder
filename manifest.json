@@ -47,6 +47,12 @@
         "bucket": "windows-ami-builder",
         "key": "config/Ec2ConfigurationSettings.xml",
         "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xennet.zip",
+        "target": "Windows\\Temp",
+        "extract": true
       }
     ]
   }
