@@ -47,39 +47,38 @@
         "bucket": "windows-ami-builder",
         "key": "config/Ec2ConfigurationSettings.xml",
         "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
-      }
-    ],
-    "drivers": [
+      },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xenbus.zip",
-        "target": "xenbus",
+        "target": "Windows\\Temp\\xenbus",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xeniface.zip",
-        "target": "xeniface",
+        "target": "Windows\\Temp\\xeniface",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xennet.zip",
-        "target": "xennet",
+        "target": "Windows\\Temp\\xennet",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xenvbd.zip",
-        "target": "xenvbd",
+        "target": "Windows\\Temp\\xenvbd",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xenvif.zip",
-        "target": "xenvif",
+        "target": "Windows\\Temp\\xenvif",
         "extract": true
       }
-    ]
+    ],
+    "drivers": []
   }
 ]

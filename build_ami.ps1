@@ -141,7 +141,11 @@ if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
 # create the vhd(x) file
 try {
   . .\Convert-WindowsImage.ps1
-  Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -Driver $drivers -RemoteDesktopEnable:$true
+  if ($drivers.length) {
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -Driver $drivers -RemoteDesktopEnable:$true
+  } else {
+    Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -RemoteDesktopEnable:$true
+  }
   if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
     Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
   } else {
