@@ -50,8 +50,32 @@
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xennet.zip",
-        "target": "Windows\\Temp",
+        "key": "driver/xen-pv/xenbus.zip",
+        "target": "Windows\\Temp\\xenbus",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xeniface.zip",
+        "target": "Windows\\Temp\\xeniface",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xennet.zip",
+        "target": "Windows\\Temp\\xennet",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xenvbd.zip",
+        "target": "Windows\\Temp\\xenvbd",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xenvif.zip",
+        "target": "Windows\\Temp\\xenvif",
         "extract": true
       }
     ]

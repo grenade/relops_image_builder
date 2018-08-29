@@ -245,14 +245,38 @@
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Install Citrix PV network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe /q /se /f > C:\Windows\Temp\xennet\install.log</CommandLine>
+          <Description>Install xen paravirtual bus driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xenbus\x64\dpinst.exe /q /se > C:\Windows\Temp\xenbus\install.log</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Show Citrix PV network driver install log in screenshots</Description>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\xennet\install.log</CommandLine>
+          <Description>Install xen paravirtual interface driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xeniface\x64\dpinst.exe /q /se > C:\Windows\Temp\xeniface\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>7</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install xen paravirtual network class driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64\dpinst.exe /q /se > C:\Windows\Temp\xennet\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>8</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install xen paravirtual network device driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xenvbd\x64\dpinst.exe /q /se > C:\Windows\Temp\xenvbd\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>9</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install xen paravirtual storage host adapter driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xenvif\x64\dpinst.exe /q /se > C:\Windows\Temp\xenvif\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>10</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Show device manager in EC2 screenshots</Description>
+          <CommandLine>cmd /c start /max devmgmt.msc</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -313,14 +337,38 @@
         <SynchronousCommand wcm:action="add">
           <Order>5</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Install Citrix PV network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64/dpinst.exe /q /se /f > C:\Windows\Temp\xennet\install.log</CommandLine>
+          <Description>Install xen paravirtual bus driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xenbus\x64\dpinst.exe /q /se > C:\Windows\Temp\xenbus\install.log</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
           <Order>6</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Show Citrix PV network driver install log in screenshots</Description>
-          <CommandLine>cmd /c start /max C:\Windows\System32\notepad.exe C:\Windows\Temp\xennet\install.log</CommandLine>
+          <Description>Install xen paravirtual interface driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xeniface\x64\dpinst.exe /q /se > C:\Windows\Temp\xeniface\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>7</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install xen paravirtual network class driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xennet\x64\dpinst.exe /q /se > C:\Windows\Temp\xennet\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>8</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install xen paravirtual network device driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xenvbd\x64\dpinst.exe /q /se > C:\Windows\Temp\xenvbd\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>9</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Install xen paravirtual storage host adapter driver</Description>
+          <CommandLine>cmd /c start /wait C:\Windows\Temp\xenvif\x64\dpinst.exe /q /se > C:\Windows\Temp\xenvif\install.log</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>10</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Show device manager in EC2 screenshots</Description>
+          <CommandLine>cmd /c start /max devmgmt.msc</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
