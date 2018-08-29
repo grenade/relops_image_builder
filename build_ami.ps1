@@ -99,6 +99,37 @@ try {
   Write-Host -object $_.Exception.Message -ForegroundColor Red
 }
 
+# download driver files if not on the local filesystem
+$drivers = @()
+foreach ($driver in $config.drivers) {
+  $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($driver.key))
+  if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
+    try {
+      Copy-S3Object -BucketName $driver.bucket -Key $driver.key -LocalFile $local_path -Region $aws_region
+      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $driver.bucket, $driver.key) -ForegroundColor White
+    } catch {
+      Write-Host -object $_.Exception.Message -ForegroundColor Red
+      throw
+    }
+  } else {
+    Write-Host -object ('driver file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
+  }
+  $driver_target = ('.\{0}' -f [System.IO.Path]::GetFileName($driver.target))
+  try {
+    if ($driver.extract) {
+      Expand-Archive -Path $local_path -DestinationPath $driver_target
+      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), $driver_target) -ForegroundColor White
+    } else {
+      Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $driver_target
+      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $driver_target) -ForegroundColor White
+    }
+  } catch {
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
+    throw
+  }
+  $drivers += (Resolve-Path -Path $driver_target).Path
+}
+
 # delete the vhd(x) file if it exists
 if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
   Remove-Item -Path $vhd_path -Force
@@ -106,7 +137,7 @@ if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
 # create the vhd(x) file
 try {
   . .\Convert-WindowsImage.ps1
-  Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -RemoteDesktopEnable:$true
+  Convert-WindowsImage -SourcePath $iso_path -VhdPath $vhd_path -VhdFormat $config.format -VhdPartitionStyle $config.partition -Edition $config.edition -UnattendPath (Resolve-Path -Path $ua_path).Path -Driver $drivers -RemoteDesktopEnable:$true
   if (Test-Path -Path $vhd_path -ErrorAction SilentlyContinue) {
     Write-Host -object ('created {0} from {1}' -f $vhd_path, $iso_path) -ForegroundColor White
   } else {
