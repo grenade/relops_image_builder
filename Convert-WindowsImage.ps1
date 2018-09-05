@@ -90,6 +90,9 @@ Convert-WindowsImage
         Enable Remote Desktop to connect to the OS inside the VHD(x) upon provisioning.
         Does not include Windows Firewall rules (firewall exceptions). The default is False.
 
+    .PARAMETER DisableDriverSearching
+        Disable Driver Searching inside the VHD(x) upon provisioning. The default is False.
+
     .PARAMETER Feature
         Enables specified Windows Feature(s). Note that you need to specify the Internal names
         understood by DISM and DISM CMDLets (e.g. NetFx3) instead of the "Friendly" names
@@ -259,6 +262,10 @@ Convert-WindowsImage
             [Parameter(ParameterSetName="SRC")]
             [Switch]
             $RemoteDesktopEnable = $False,
+
+            [Parameter(ParameterSetName="SRC")]
+            [Switch]
+            $DisableDriverSearching = $False,
 
             [Parameter(ParameterSetName="SRC")]
             [Alias("Unattend")]
@@ -4394,7 +4401,7 @@ format fs=fat32 label="System"
                     }
 
                     if (
-                        ( 
+                        (
                             $RemoteDesktopEnable -eq $True
                         ) -or (
                             $ExpandOnNativeBoot -eq $False
@@ -4414,6 +4421,25 @@ format fs=fat32 label="System"
             
                             Write-W2VInfo -text "Disabling automatic $VHDFormat expansion for Native Boot"
                             Set-ItemProperty -Path "HKLM:\$($hive)\ControlSet001\Services\FsDepends\Parameters" -Name "VirtualDiskExpandOnMount" -Value 4
+            
+                        }
+
+                        Dismount-RegistryHive -HiveMountPoint $hive
+
+                    }
+
+                    if (
+                        (
+                            $DisableDriverSearching -eq $True
+                        )
+                    ) {
+        
+                        $hive         = Mount-RegistryHive -Hive (Join-Path $drive "Windows\System32\Config\Software")
+
+                        if ( $DisableDriverSearching -eq $True ) {
+            
+                            Write-W2VInfo -text "Disabling Driver Searching"
+                            Set-ItemProperty -Path "HKLM:\$($hive)\Policies\Microsoft\Windows\DriverSearching" -Name "SearchOrderConfig" -Value 0
             
                         }
 
