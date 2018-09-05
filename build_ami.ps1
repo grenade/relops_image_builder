@@ -37,7 +37,7 @@ $image_capture_date = ((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))
 $image_description = ('{0} {1} ({2}) - edition: {3}, language: {4}, partition: {5}, captured: {6}' -f $config.os, $config.build.major, $config.version, $config.edition, $config.language, $config.partition, $image_capture_date)
 
 $aws_region = 'us-west-2'
-$aws_availability_zone = ('{0}a' -f $aws_region)
+$aws_availability_zone = ('{0}c' -f $aws_region)
 
 $cwi_url = 'https://raw.githubusercontent.com/grenade/relops_image_builder/master/Convert-WindowsImage.ps1'
 $cwi_path = ('.\{0}' -f [System.IO.Path]::GetFileName($cwi_url))
@@ -300,6 +300,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
       exit
     }
     while ((Get-EC2Volume -VolumeId $block_device_mapping.Ebs.VolumeId).State -ne 'available') {
+      Write-Host -object ('waiting for volume {0} to detach from {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $instance_id, $block_device_mapping.DeviceName) -ForegroundColor DarkGray
       Start-Sleep -Milliseconds 500
     }
     Remove-EC2Volume -VolumeId $block_device_mapping.Ebs.VolumeId -PassThru -Force
@@ -341,7 +342,8 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   New-Item -ItemType Directory -Force -Path $screenshot_folder_path
   $last_screenshot_time = ((Get-Date).AddSeconds(-60).ToUniversalTime())
   $last_instance_state = ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name)
-  while ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') {
+  $stopwatch =  [System.Diagnostics.Stopwatch]::StartNew()
+  while (((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') -and ($stopwatch.Elapsed.TotalMinutes -lt 30)) {
     if ($last_screenshot_time -le (Get-Date).ToUniversalTime().AddSeconds(-60)) {
       try {
         $new_screenshot_time = ((Get-Date).ToUniversalTime())
@@ -359,6 +361,43 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
       $last_instance_state = $new_instance_state
     }
     Start-Sleep -Seconds 1
+  }
+  if ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -eq 'running') {
+    Write-Host -object ('instance failed to stop in {0:n1} minutes. forcing stop...' -f $stopwatch.Elapsed.TotalMinutes) -ForegroundColor Cyan
+    Stop-EC2Instance -InstanceId $instance_id -ForceStop
+    while ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') {
+      Write-Host -object 'waiting for instance to stop' -ForegroundColor DarkCyan
+      Start-Sleep -Seconds 5
+    }
+    $local_instance_id = 'i-04332aa3f797e88ed' # todo: pull from local metadata
+    $local_devices = @('xvdf', 'xvdg', 'xvdh', 'xvdi', 'xvdj')
+    $i = 0
+    foreach ($block_device_mapping in (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings) {
+      try {
+        $detach_volume = (Dismount-EC2Volume -InstanceId $instance_id -Device $block_device_mapping.DeviceName -VolumeId $block_device_mapping.Ebs.VolumeId -ForceDismount:$true)
+        Write-Host -object $detach_volume -ForegroundColor DarkCyan
+        Write-Host -object ('detached volume {0} from {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $instance_id, $block_device_mapping.DeviceName) -ForegroundColor Cyan
+      } catch {
+        Write-Host -object ('failed to detach volume {0} from {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $instance_id, $block_device_mapping.DeviceName) -ForegroundColor Red
+        Write-Host -object $_.Exception.Message -ForegroundColor Red
+        exit
+      }
+      while ((Get-EC2Volume -VolumeId $block_device_mapping.Ebs.VolumeId).State -ne 'available') {
+        Write-Host -object ('waiting for volume {0} to detach from {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $instance_id, $block_device_mapping.DeviceName) -ForegroundColor DarkCyan
+        Start-Sleep -Milliseconds 500
+      }
+      # attach volume to current instance for access to logs
+      try {
+        $attach_volume = (Add-EC2Volume -InstanceId $local_instance_id -VolumeId $block_device_mapping.Ebs.VolumeId -Device $local_devices[$i] -Force)
+        Write-Host -object $attach_volume -ForegroundColor DarkCyan
+        Write-Host -object ('attached volume {0} to {1}{2}' -f $block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_devices[$i]) -ForegroundColor Cyan
+      } catch {
+        Write-Host -object ('failed to attach volume {0} to {1}{2}' -f  $block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_devices[$i]) -ForegroundColor Red
+        Write-Host -object $_.Exception.Message -ForegroundColor Red
+        throw
+      }
+      $i++
+    }
   }
 
   # todo:
