@@ -75,16 +75,15 @@ if (-not (Test-Path -Path $iso_path -ErrorAction SilentlyContinue)) {
   Write-Host -object ('iso detected at: {0}' -f $iso_path) -ForegroundColor DarkGray
 }
 
-# download the vhd conversion script if not on the local filesystem
-if (-not (Test-Path -Path $cwi_path -ErrorAction SilentlyContinue)) {
-  try {
-    (New-Object Net.WebClient).DownloadFile($cwi_url, $cwi_path)
-    Write-Host -object ('downloaded {0} to {1}' -f $cwi_url, $cwi_path) -ForegroundColor White
-  } catch {
-    Write-Host -object $_.Exception.Message -ForegroundColor Red
-  }
-} else {
-  Write-Host -object ('vhd conversion script detected at: {0}' -f $cwi_path) -ForegroundColor DarkGray
+# download the vhd conversion script
+if (Test-Path -Path $cwi_path -ErrorAction SilentlyContinue) {
+  Remove-Item -Path $cwi_path -Force
+}
+try {
+  (New-Object Net.WebClient).DownloadFile($cwi_url, $cwi_path)
+  Write-Host -object ('downloaded {0} to {1}' -f $cwi_url, $cwi_path) -ForegroundColor White
+} catch {
+  Write-Host -object $_.Exception.Message -ForegroundColor Red
 }
 
 # delete the unattend file if it exists

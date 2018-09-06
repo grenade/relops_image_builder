@@ -4428,7 +4428,7 @@ format fs=fat32 label="System"
                         $Driver | ForEach-Object -Process {
 
                             Write-W2VInfo -text "Driver path: $PSItem"
-                            $Dism = Add-WindowsDriver -Path $drive -Recurse -Driver $PSItem
+                            $Dism = Add-WindowsDriver -Path $drive -Recurse -ForceUnsigned -Driver $PSItem
                         }
                     }
 
