@@ -69,7 +69,7 @@
       </ImageInstall>
       <UserData>
         <AcceptEula>true</AcceptEula>
-        <FullName></FullName>
+        <FullName>Mozilla Corporation</FullName>
         <Organization>Mozilla Corporation</Organization>
         <ProductKey>
           <Key>W269N-WFGWX-YVC9B-4J6C9-T83GX</Key>
@@ -124,7 +124,7 @@
       </ImageInstall>
       <UserData>
         <AcceptEula>true</AcceptEula>
-        <FullName></FullName>
+        <FullName>Mozilla Corporation</FullName>
         <Organization>Mozilla Corporation</Organization>
         <ProductKey>
           <Key>W269N-WFGWX-YVC9B-4J6C9-T83GX</Key>
@@ -203,7 +203,7 @@
         <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
         <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
         <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-        <NetworkLocation>Home</NetworkLocation>
+        <NetworkLocation>Other</NetworkLocation>
         <SkipUserOOBE>true</SkipUserOOBE>
         <SkipMachineOOBE>true</SkipMachineOOBE>
         <ProtectYourPC>3</ProtectYourPC>
@@ -215,7 +215,7 @@
         </AdministratorPassword>
       </UserAccounts>
       <RegisteredOrganization>Mozilla Corporation</RegisteredOrganization>
-      <RegisteredOwner></RegisteredOwner>
+      <RegisteredOwner>Mozilla Corporation</RegisteredOwner>
       <DisableAutoDaylightTimeSet>true</DisableAutoDaylightTimeSet>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
@@ -265,7 +265,7 @@
         <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
         <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
         <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-        <NetworkLocation>Home</NetworkLocation>
+        <NetworkLocation>Other</NetworkLocation>
         <SkipUserOOBE>true</SkipUserOOBE>
         <SkipMachineOOBE>true</SkipMachineOOBE>
         <ProtectYourPC>3</ProtectYourPC>
@@ -277,7 +277,7 @@
         </AdministratorPassword>
       </UserAccounts>
       <RegisteredOrganization>Mozilla Corporation</RegisteredOrganization>
-      <RegisteredOwner></RegisteredOwner>
+      <RegisteredOwner>Mozilla Corporation</RegisteredOwner>
       <DisableAutoDaylightTimeSet>true</DisableAutoDaylightTimeSet>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
