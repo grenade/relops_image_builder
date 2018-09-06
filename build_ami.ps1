@@ -113,7 +113,7 @@ foreach ($driver in $config.drivers) {
   } else {
     Write-Host -object ('driver file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
   }
-  $driver_target = ('.\{0}' -f [System.IO.Path]::GetFileName($driver.target))
+  $driver_target = ('.\{0}' -f $driver.target)
   if (Test-Path -Path $driver_target -ErrorAction SilentlyContinue) {
     Remove-Item $driver_target -Force  -Recurse
     Write-Host -object ('deleted: {0}' -f $driver_target) -ForegroundColor DarkGray
@@ -130,7 +130,7 @@ foreach ($driver in $config.drivers) {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
     throw
   }
-  $drivers += (Resolve-Path -Path $driver_target).Path
+  $drivers += (Resolve-Path -Path ('.\{0}' -f $driver.inf)).Path
 }
 
 # delete the vhd(x) file if it exists

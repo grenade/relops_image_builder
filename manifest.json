@@ -54,30 +54,35 @@
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xenbus.zip",
         "target": "xenbus",
+        "inf": "xenbus\\x64",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xeniface.zip",
         "target": "xeniface",
+        "inf": "xeniface\\x64",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xennet.zip",
         "target": "xennet",
+        "inf": "xennet\\x64",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xenvbd.zip",
         "target": "xenvbd",
+        "inf": "xenvbd\\x64",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
         "key": "driver/xen-pv/xenvif.zip",
         "target": "xenvif",
+        "inf": "xenvif\\x64",
         "extract": true
       }
     ]
