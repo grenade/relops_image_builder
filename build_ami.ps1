@@ -342,7 +342,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   $last_screenshot_time = ((Get-Date).AddSeconds(-60).ToUniversalTime())
   $last_instance_state = ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name)
   $stopwatch =  [System.Diagnostics.Stopwatch]::StartNew()
-  while (((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') -and ($stopwatch.Elapsed.TotalMinutes -lt 30)) {
+  while (((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') -and ($stopwatch.Elapsed.TotalMinutes -lt 180)) {
     if ($last_screenshot_time -le (Get-Date).ToUniversalTime().AddSeconds(-60)) {
       try {
         $new_screenshot_time = ((Get-Date).ToUniversalTime())
