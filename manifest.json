@@ -86,5 +86,93 @@
         "extract": true
       }
     ]
+  },
+  {
+    "os": "Windows",
+    "version": 1703,
+    "build": {
+      "major": 10,
+      "minor": 0,
+      "release": 15063,
+      "build": 11
+    },
+    "update": "March 2017",
+    "changelog": "https://changewindows.org/build/redstone2/15063/pc#11",
+    "edition": "Professional",
+    "language": "en-US",
+    "iso": {
+      "bucket": "windows-ami-builder",
+      "key": "iso/Win10_1703_English_x64.iso"
+    },
+    "vhd": {
+      "bucket": "windows-ami-builder",
+      "key": "vhd/Windows_10_Professional_1703_15063_en-US_x64_MBR.vhd"
+    },
+    "unattend": "https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/Windows10-Professional-en-US.xml",
+    "partition": "MBR",
+    "format": "VHD",
+    "architecture": "x64",
+    "packages": [
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AWSPVDriver.zip",
+        "target": "Windows\\Temp\\AWSPVDriver",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AwsEnaNetworkDriver.zip",
+        "target": "Windows\\Temp\\AwsEnaNetworkDriver",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "package/EC2Install.zip",
+        "target": "Windows\\Temp",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/Ec2ConfigurationSettings.xml",
+        "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
+      }
+    ],
+    "drivers": [
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xenbus.zip",
+        "target": "xenbus",
+        "inf": "xenbus\\x64",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xeniface.zip",
+        "target": "xeniface",
+        "inf": "xeniface\\x64",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xennet.zip",
+        "target": "xennet",
+        "inf": "xennet\\x64",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xenvbd.zip",
+        "target": "xenvbd",
+        "inf": "xenvbd\\x64",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/xen-pv/xenvif.zip",
+        "target": "xenvif",
+        "inf": "xenvif\\x64",
+        "extract": true
+      }
+    ]
   }
 ]
