@@ -102,20 +102,20 @@ try {
 $drivers = @()
 foreach ($driver in $config.drivers) {
   $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($driver.key))
-  if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
-    try {
-      Copy-S3Object -BucketName $driver.bucket -Key $driver.key -LocalFile $local_path -Region $aws_region
-      Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $driver.bucket, $driver.key) -ForegroundColor White
-    } catch {
-      Write-Host -object $_.Exception.Message -ForegroundColor Red
-      throw
-    }
-  } else {
-    Write-Host -object ('driver file detected at: {0}' -f (Resolve-Path -Path $local_path)) -ForegroundColor DarkGray
+  if (Test-Path -Path $local_path -ErrorAction SilentlyContinue) {
+    Remove-Item $local_path -Force -Recurse
+    Write-Host -object ('deleted: {0}' -f $local_path) -ForegroundColor DarkGray
+  }
+  try {
+    Copy-S3Object -BucketName $driver.bucket -Key $driver.key -LocalFile $local_path -Region $aws_region
+    Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $driver.bucket, $driver.key) -ForegroundColor White
+  } catch {
+    Write-Host -object $_.Exception.Message -ForegroundColor Red
+    throw
   }
   $driver_target = ('.\{0}' -f $driver.target)
   if (Test-Path -Path $driver_target -ErrorAction SilentlyContinue) {
-    Remove-Item $driver_target -Force  -Recurse
+    Remove-Item $driver_target -Force -Recurse
     Write-Host -object ('deleted: {0}' -f $driver_target) -ForegroundColor DarkGray
   }
   try {
