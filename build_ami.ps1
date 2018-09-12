@@ -27,8 +27,8 @@ $manifest = (Invoke-WebRequest -Uri ('https://raw.githubusercontent.com/grenade/
 $config = @($manifest | Where-Object {
   $_.os -eq 'Windows' -and
   $_.build.major -eq 10 -and
-  $_.build.release -eq 15063 -and
-  $_.version -eq 1703 -and
+  $_.build.release -eq 17134 -and
+  $_.version -eq 1803 -and
   $_.edition -eq 'Professional' -and
   $_.language -eq 'en-US'
 })[0]
