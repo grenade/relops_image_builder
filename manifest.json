@@ -27,18 +27,6 @@
     "packages": [
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/AWSPVDriver.zip",
-        "target": "Windows\\Temp\\AWSPVDriver",
-        "extract": true
-      },
-      {
-        "bucket": "windows-ami-builder",
-        "key": "driver/AwsEnaNetworkDriver.zip",
-        "target": "Windows\\Temp\\AwsEnaNetworkDriver",
-        "extract": true
-      },
-      {
-        "bucket": "windows-ami-builder",
         "key": "package/EC2Install.zip",
         "target": "Windows\\Temp",
         "extract": true
@@ -83,6 +71,13 @@
         "key": "driver/aws-pv/xenvif.zip",
         "target": "xenvif",
         "inf": "xenvif",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AwsEnaNetworkDriver.zip",
+        "target": "AwsEnaNetworkDriver",
+        "inf": "AwsEnaNetworkDriver\\bin.10.0",
         "extract": true
       }
     ]
@@ -115,18 +110,6 @@
     "packages": [
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/AWSPVDriver.zip",
-        "target": "Windows\\Temp\\AWSPVDriver",
-        "extract": true
-      },
-      {
-        "bucket": "windows-ami-builder",
-        "key": "driver/AwsEnaNetworkDriver.zip",
-        "target": "Windows\\Temp\\AwsEnaNetworkDriver",
-        "extract": true
-      },
-      {
-        "bucket": "windows-ami-builder",
         "key": "package/EC2Install.zip",
         "target": "Windows\\Temp",
         "extract": true
@@ -171,6 +154,13 @@
         "key": "driver/aws-pv/xenvif.zip",
         "target": "xenvif",
         "inf": "xenvif",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AwsEnaNetworkDriver.zip",
+        "target": "AwsEnaNetworkDriver",
+        "inf": "AwsEnaNetworkDriver\\bin.10.0",
         "extract": true
       }
     ]

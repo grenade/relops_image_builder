@@ -243,23 +243,17 @@
         <SynchronousCommand wcm:action="add">
           <Order>2</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Install ENA network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Order>3</Order>
-          <RequiresUserInput>false</RequiresUserInput>
           <Description>Install EC2Config</Description>
           <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>4</Order>
+          <Order>3</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Overwrite Ec2ConfigService config</Description>
           <CommandLine>cmd /c move /y C:\Windows\Temp\Ec2ConfigurationSettings.xml "C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml"</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>5</Order>
+          <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Show device manager in EC2 screenshots</Description>
           <CommandLine>cmd /c start /max devmgmt.msc</CommandLine>
@@ -305,23 +299,17 @@
         <SynchronousCommand wcm:action="add">
           <Order>2</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Install ENA network driver</Description>
-          <CommandLine>cmd /c start /wait C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File C:\Windows\Temp\AwsEnaNetworkDriver\install.ps1</CommandLine>
-        </SynchronousCommand>
-        <SynchronousCommand wcm:action="add">
-          <Order>3</Order>
-          <RequiresUserInput>false</RequiresUserInput>
           <Description>Install EC2Config</Description>
           <CommandLine>cmd /c start /wait C:\Windows\Temp\Ec2Install.exe /quiet</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>4</Order>
+          <Order>3</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Overwrite Ec2ConfigService config</Description>
           <CommandLine>cmd /c move /y C:\Windows\Temp\Ec2ConfigurationSettings.xml "C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml"</CommandLine>
         </SynchronousCommand>
         <SynchronousCommand wcm:action="add">
-          <Order>5</Order>
+          <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Show device manager in EC2 screenshots</Description>
           <CommandLine>cmd /c start /max devmgmt.msc</CommandLine>
