@@ -122,10 +122,10 @@ foreach ($driver in $config.drivers) {
   try {
     if ($driver.extract) {
       Expand-Archive -Path $local_path -DestinationPath $driver_target
-      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), $driver_target) -ForegroundColor White
+      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), (Resolve-Path -Path $driver_target)) -ForegroundColor White
     } else {
       Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $driver_target
-      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $driver_target) -ForegroundColor White
+      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), (Resolve-Path -Path $driver_target)) -ForegroundColor White
     }
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
@@ -179,10 +179,10 @@ foreach ($package in $config.packages) {
   try {
     if ($package.extract) {
       Expand-Archive -Path $local_path -DestinationPath $mount_path_package_target
-      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_package_target) -ForegroundColor White
+      Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), (Resolve-Path -Path $mount_path_package_target)) -ForegroundColor White
     } else {
       Copy-Item -Path (Resolve-Path -Path $local_path) -Destination $mount_path_package_target
-      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), $mount_path_package_target) -ForegroundColor White
+      Write-Host -object ('copied {0} to {1}' -f (Resolve-Path -Path $local_path), (Resolve-Path -Path $mount_path_package_target)) -ForegroundColor White
     }
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
