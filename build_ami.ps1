@@ -20,6 +20,7 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
   exit
 }
 
+$ec2_instance_type = 'c4.4xlarge'
 $ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
 $ec2_security_groups = @('ssh-only', 'rdp-only')
 
@@ -273,7 +274,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
 
   # create a new ec2 linux instance instantiated with a pre-existing ami
   $amazon_linux_ami_id = (Get-EC2Image -Owner 'amazon' -Filter @((New-Object -TypeName Amazon.EC2.Model.Filter -ArgumentList @('description', @(('Amazon Linux 2 AMI * HVM gp2'))))))[0].ImageId
-  $instance = (New-EC2Instance -ImageId $amazon_linux_ami_id -AvailabilityZone $aws_availability_zone -MinCount 1 -MaxCount 1 -InstanceType 'c4.4xlarge' -KeyName $ec2_key_pair -SecurityGroup $ec2_security_groups).Instances[0]
+  $instance = (New-EC2Instance -ImageId $amazon_linux_ami_id -AvailabilityZone $aws_availability_zone -MinCount 1 -MaxCount 1 -InstanceType $ec2_instance_type -KeyName $ec2_key_pair -SecurityGroup $ec2_security_groups).Instances[0]
   $instance_id = $instance.InstanceId
   Write-Host -object ('instance {0} created with ami {1}' -f  $instance_id, $amazon_linux_ami_id) -ForegroundColor White
   while ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'running') {
@@ -369,7 +370,25 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
       Start-Sleep -Seconds 5
     }
     $local_instance_id = 'i-04332aa3f797e88ed' # todo: pull from local metadata
-    $local_devices = @('xvdf', 'xvdg', 'xvdh', 'xvdi', 'xvdj')
+    $local_devices = @([char[]]([char]'f'..[char]'z')|%{('xvd{0}' -f $_)})
+    # detach previous debug volumes
+    foreach ($local_block_device_mapping in (Get-EC2Instance -InstanceId $local_instance_id).Instances[0].BlockDeviceMappings) {
+      if ($local_devices.Contains($local_block_device_mapping.DeviceName)) {
+        try {
+          $detach_volume = (Dismount-EC2Volume -InstanceId $local_instance_id -Device $local_block_device_mapping.DeviceName -VolumeId $local_block_device_mapping.Ebs.VolumeId -ForceDismount:$true)
+          Write-Host -object $detach_volume -ForegroundColor DarkCyan
+          Write-Host -object ('detached volume {0} from {1}{2}' -f  $local_block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_block_device_mapping.DeviceName) -ForegroundColor Cyan
+        } catch {
+          Write-Host -object ('failed to detach volume {0} from {1}{2}' -f  $local_block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_block_device_mapping.DeviceName) -ForegroundColor Red
+          Write-Host -object $_.Exception.Message -ForegroundColor Red
+          exit
+        }
+        while ((Get-EC2Volume -VolumeId $local_block_device_mapping.Ebs.VolumeId).State -ne 'available') {
+          Write-Host -object ('waiting for volume {0} to detach from {1}{2}' -f  $local_block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_block_device_mapping.DeviceName) -ForegroundColor DarkCyan
+          Start-Sleep -Milliseconds 500
+        }
+      }
+    }
     $i = 0
     foreach ($block_device_mapping in (Get-EC2Instance -InstanceId $instance_id).Instances[0].BlockDeviceMappings) {
       try {
@@ -386,23 +405,6 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
         Start-Sleep -Milliseconds 500
       }
       # attach volume to current instance for access to logs
-      foreach ($local_block_device_mapping in (Get-EC2Instance -InstanceId $local_instance_id).Instances[0].BlockDeviceMappings) {
-        if ($local_devices.Contains($local_block_device_mapping.DeviceName)) {
-          try {
-            $detach_volume = (Dismount-EC2Volume -InstanceId $local_instance_id -Device $local_block_device_mapping.DeviceName -VolumeId $local_block_device_mapping.Ebs.VolumeId -ForceDismount:$true)
-            Write-Host -object $detach_volume -ForegroundColor DarkCyan
-            Write-Host -object ('detached volume {0} from {1}{2}' -f  $local_block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_block_device_mapping.DeviceName) -ForegroundColor Cyan
-          } catch {
-            Write-Host -object ('failed to detach volume {0} from {1}{2}' -f  $local_block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_block_device_mapping.DeviceName) -ForegroundColor Red
-            Write-Host -object $_.Exception.Message -ForegroundColor Red
-            exit
-          }
-          while ((Get-EC2Volume -VolumeId $local_block_device_mapping.Ebs.VolumeId).State -ne 'available') {
-            Write-Host -object ('waiting for volume {0} to detach from {1}{2}' -f  $local_block_device_mapping.Ebs.VolumeId, $local_instance_id, $local_block_device_mapping.DeviceName) -ForegroundColor DarkCyan
-            Start-Sleep -Milliseconds 500
-          }
-        }
-      }
       try {
         $attach_volume = (Add-EC2Volume -InstanceId $local_instance_id -VolumeId $block_device_mapping.Ebs.VolumeId -Device $local_devices[$i] -Force)
         Write-Host -object $attach_volume -ForegroundColor DarkCyan
