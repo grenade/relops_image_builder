@@ -52,37 +52,37 @@
     "drivers": [
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xenbus.zip",
+        "key": "driver/aws-pv/xenbus.zip",
         "target": "xenbus",
-        "inf": "xenbus\\x64",
+        "inf": "xenbus",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xeniface.zip",
+        "key": "driver/aws-pv/xeniface.zip",
         "target": "xeniface",
-        "inf": "xeniface\\x64",
+        "inf": "xeniface",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xennet.zip",
+        "key": "driver/aws-pv/xennet.zip",
         "target": "xennet",
-        "inf": "xennet\\x64",
+        "inf": "xennet",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xenvbd.zip",
+        "key": "driver/aws-pv/xenvbd.zip",
         "target": "xenvbd",
-        "inf": "xenvbd\\x64",
+        "inf": "xenvbd",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xenvif.zip",
+        "key": "driver/aws-pv/xenvif.zip",
         "target": "xenvif",
-        "inf": "xenvif\\x64",
+        "inf": "xenvif",
         "extract": true
       }
     ]
@@ -140,37 +140,37 @@
     "drivers": [
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xenbus.zip",
+        "key": "driver/aws-pv/xenbus.zip",
         "target": "xenbus",
-        "inf": "xenbus\\x64",
+        "inf": "xenbus",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xeniface.zip",
+        "key": "driver/aws-pv/xeniface.zip",
         "target": "xeniface",
-        "inf": "xeniface\\x64",
+        "inf": "xeniface",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xennet.zip",
+        "key": "driver/aws-pv/xennet.zip",
         "target": "xennet",
-        "inf": "xennet\\x64",
+        "inf": "xennet",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xenvbd.zip",
+        "key": "driver/aws-pv/xenvbd.zip",
         "target": "xenvbd",
-        "inf": "xenvbd\\x64",
+        "inf": "xenvbd",
         "extract": true
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/xen-pv/xenvif.zip",
+        "key": "driver/aws-pv/xenvif.zip",
         "target": "xenvif",
-        "inf": "xenvif\\x64",
+        "inf": "xenvif",
         "extract": true
       }
     ]
