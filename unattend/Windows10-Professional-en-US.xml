@@ -255,8 +255,8 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Show device manager in EC2 screenshots</Description>
-          <CommandLine>cmd /c start /max devmgmt.msc</CommandLine>
+          <Description>Uninstall and disable OneDrive</Description>
+          <CommandLine>cmd /c start /wait powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/grenade/c20050d28a6ab456d9b304ab30d320a0/raw/disable-onedrive-win10.ps1'))"</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
@@ -311,8 +311,8 @@
         <SynchronousCommand wcm:action="add">
           <Order>4</Order>
           <RequiresUserInput>false</RequiresUserInput>
-          <Description>Show device manager in EC2 screenshots</Description>
-          <CommandLine>cmd /c start /max devmgmt.msc</CommandLine>
+          <Description>Uninstall and disable OneDrive</Description>
+          <CommandLine>cmd /c start /wait powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/grenade/c20050d28a6ab456d9b304ab30d320a0/raw/disable-onedrive-win10.ps1'))"</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
