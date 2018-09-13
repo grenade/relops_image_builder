@@ -416,10 +416,16 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
       }
       $i++
     }
+  } elseif ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -eq 'stopped') {
+    try {
+      $ami_id = (New-EC2Image -InstanceId $instance_id -Name ('{0}-{1}' -f [System.IO.Path]::GetFileNameWithoutExtension($config.vhd.key), $image_capture_date) -Description $image_description)
+      Write-Host -object ('ami {0} created from instance {1}' -f $ami_id, $instance_id) -ForegroundColor Green
+    } catch {
+      Write-Host -object ('failed to create ami from instance {0}' -f  $instance_id) -ForegroundColor Red
+      Write-Host -object $_.Exception.Message -ForegroundColor Red
+      throw
+    }
   }
-
   # todo:
-  # - configure ec2config: enable userdata execution
-  # - shut down instance and capture an ami
   # - delete instances, snapshots and volumes created during vhd import
 }

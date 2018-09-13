@@ -258,6 +258,12 @@
           <Description>Uninstall and disable OneDrive</Description>
           <CommandLine>cmd /c start /wait powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/grenade/c20050d28a6ab456d9b304ab30d320a0/raw/disable-onedrive-win10.ps1'))"</CommandLine>
         </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Uninstall and disable OneDrive</Description>
+          <CommandLine>cmd /c start shutdown -s -t 0 -c "windows install complete" -f -d p:2:4</CommandLine>
+        </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
     </component>
@@ -313,6 +319,12 @@
           <RequiresUserInput>false</RequiresUserInput>
           <Description>Uninstall and disable OneDrive</Description>
           <CommandLine>cmd /c start /wait powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/grenade/c20050d28a6ab456d9b304ab30d320a0/raw/disable-onedrive-win10.ps1'))"</CommandLine>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>5</Order>
+          <RequiresUserInput>false</RequiresUserInput>
+          <Description>Uninstall and disable OneDrive</Description>
+          <CommandLine>cmd /c start shutdown -s -t 0 -c "windows install complete" -f -d p:2:4</CommandLine>
         </SynchronousCommand>
       </FirstLogonCommands>
       <TimeZone>UTC</TimeZone>
