@@ -35,6 +35,21 @@
         "bucket": "windows-ami-builder",
         "key": "config/Ec2ConfigurationSettings.xml",
         "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "package/nxlog-ce-2.10.2102.msi",
+        "target": "Windows\\Temp"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/nxlog-win10.conf",
+        "target": "Windows\\Temp\\nxlog.conf"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/papertrail-bundle.pem",
+        "target": "Windows\\Temp\\papertrail-bundle.pem"
       }
     ],
     "drivers": [
@@ -118,6 +133,21 @@
         "bucket": "windows-ami-builder",
         "key": "config/Ec2ConfigurationSettings.xml",
         "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "package/nxlog-ce-2.10.2102.msi",
+        "target": "Windows\\Temp"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/nxlog-win10.conf",
+        "target": "Windows\\Temp\\nxlog.conf"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/papertrail-bundle.pem",
+        "target": "Windows\\Temp\\papertrail-bundle.pem"
       }
     ],
     "drivers": [
