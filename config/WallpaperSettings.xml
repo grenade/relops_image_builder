@@ -1,0 +1,45 @@
+<?xml version="1.0" standalone="yes"?>
+<WallpaperSettings xmlns="http://tempuri.org/WallpaperSettings.xsd">
+  <GlobalSettings>
+    <AddECU>false</AddECU>
+    <AddMemory>false</AddMemory>
+    <AddIO>false</AddIO>
+  </GlobalSettings>
+  <!--
+  <WallpaperInformation>
+    <name>Hostname</name>
+    <source>built-in</source>
+    <identifier>hostname</identifier>
+  </WallpaperInformation>
+  <WallpaperInformation>
+    <name>Instance ID</name>
+    <source>metadata</source>
+    <identifier>meta-data/instance-id</identifier>
+  </WallpaperInformation>
+  <WallpaperInformation>
+    <name>Public IP Address</name>
+    <source>metadata</source>
+    <identifier>meta-data/public-ipv4</identifier>
+  </WallpaperInformation>
+  <WallpaperInformation>
+    <name>Private IP Address</name>
+    <source>metadata</source>
+    <identifier>meta-data/local-ipv4</identifier>
+  </WallpaperInformation>
+  <WallpaperInformation>
+    <name>Availability Zone</name>
+    <source>metadata</source>
+    <identifier>meta-data/placement/availability-zone</identifier>
+  </WallpaperInformation>
+  <WallpaperInformation>
+    <name>Instance Size</name>
+    <source>metadata</source>
+    <identifier>meta-data/instance-type</identifier>
+  </WallpaperInformation>
+  <WallpaperInformation>
+    <name>Architecture</name>
+    <source>environmentvariable</source>
+    <identifier>PROCESSOR_ARCHITECTURE</identifier>
+  </WallpaperInformation>
+  -->
+</WallpaperSettings>
