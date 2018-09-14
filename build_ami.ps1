@@ -20,7 +20,7 @@ if (-not (New-Object System.Security.Principal.WindowsPrincipal([System.Security
   exit
 }
 
-$ec2_instance_type = 'c5.4xlarge'
+$ec2_instance_type = 'g3.4xlarge'
 $ec2_key_pair = 'mozilla-taskcluster-worker-gecko-t-win10-64'
 $ec2_security_groups = @('ssh-only', 'rdp-only')
 
