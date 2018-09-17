@@ -101,8 +101,8 @@
         "extract": true
       },
       {
-        "bucket": "relops-windows-packages",
-        "key": "vac413full.zip",
+        "bucket": "windows-ami-builder",
+        "key": "driver/vac413full.zip",
         "target": "vac413full",
         "inf": "vac413full\\vac413full",
         "extract": true
