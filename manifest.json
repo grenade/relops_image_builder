@@ -102,9 +102,9 @@
       },
       {
         "bucket": "windows-ami-builder",
-        "key": "driver/vac413full.zip",
-        "target": "vac413full",
-        "inf": "vac413full\\vac413full",
+        "key": "driver/vac413.zip",
+        "target": "vac413",
+        "inf": "vac413",
         "extract": true
       }
     ]
