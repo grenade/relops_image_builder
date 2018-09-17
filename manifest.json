@@ -99,6 +99,13 @@
         "target": "AwsEnaNetworkDriver",
         "inf": "AwsEnaNetworkDriver\\bin.10.0",
         "extract": true
+      },
+      {
+        "bucket": "relops-windows-packages",
+        "key": "vac413full.zip",
+        "target": "vac413full",
+        "inf": "vac413full\\vac413full",
+        "extract": true
       }
     ]
   },
