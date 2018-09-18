@@ -106,6 +106,13 @@
         "target": "vac413",
         "inf": "vac413",
         "extract": true
+      },
+      {
+        "bucket": "ec2-windows-nvidia-drivers",
+        "key": "grid-6.2/391.81_grid_win10_server2016_64bit_international.exe",
+        "target": "391.81_grid_win10_server2016_64bit_international",
+        "inf": "391.81_grid_win10_server2016_64bit_international",
+        "extract": true
       }
     ]
   },
@@ -208,6 +215,20 @@
         "key": "driver/AwsEnaNetworkDriver.zip",
         "target": "AwsEnaNetworkDriver",
         "inf": "AwsEnaNetworkDriver\\bin.10.0",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/vac413.zip",
+        "target": "vac413",
+        "inf": "vac413",
+        "extract": true
+      },
+      {
+        "bucket": "ec2-windows-nvidia-drivers",
+        "key": "grid-6.2/391.81_grid_win10_server2016_64bit_international.exe",
+        "target": "391.81_grid_win10_server2016_64bit_international",
+        "inf": "391.81_grid_win10_server2016_64bit_international",
         "extract": true
       }
     ]
