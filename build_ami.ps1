@@ -341,16 +341,23 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   $screenshot_folder_path = ('.\{0}' -f $instance_id)
   New-Item -ItemType Directory -Force -Path $screenshot_folder_path
   $last_screenshot_time = ((Get-Date).AddSeconds(-60).ToUniversalTime())
+  $last_screenshot_size = 0
   $last_instance_state = ((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name)
   $stopwatch =  [System.Diagnostics.Stopwatch]::StartNew()
   while (((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') -and ($stopwatch.Elapsed.TotalMinutes -lt 180)) {
-    if ($last_screenshot_time -le (Get-Date).ToUniversalTime().AddSeconds(-60)) {
+    if ($last_screenshot_size > 60kb) {
+      $screenshot_frequency = 1
+    } else {
+      $screenshot_frequency = 30
+    }
+    if ($last_screenshot_time -le (Get-Date).ToUniversalTime().AddSeconds(0 - $screenshot_frequency)) {
       try {
         $new_screenshot_time = ((Get-Date).ToUniversalTime())
         $screenshot_path = ('{0}\{1}.jpg' -f $screenshot_folder_path, $new_screenshot_time.ToString("yyyyMMddHHmmss"))
         [io.file]::WriteAllBytes($screenshot_path, [convert]::FromBase64String((Get-EC2ConsoleScreenshot -InstanceId $instance_id -ErrorAction Stop).ImageData))
         $last_screenshot_time = $new_screenshot_time
-        Write-Host -object ('screenshot saved to {0}' -f (Resolve-Path -Path $screenshot_path).Path) -ForegroundColor DarkGray
+        $last_screenshot_size = (Get-Item -Path $screenshot_path).length
+        Write-Host -object ('{0:n1}kb screenshot saved to {1}' -f ($last_screenshot_size/1kb), (Resolve-Path -Path $screenshot_path).Path) -ForegroundColor DarkGray
       } catch {
         Write-Host -object $_.Exception.Message -ForegroundColor Red
       }
