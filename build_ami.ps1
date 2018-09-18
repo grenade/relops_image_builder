@@ -108,7 +108,7 @@ foreach ($driver in $config.drivers) {
     Write-Host -object ('deleted: {0}' -f $local_path) -ForegroundColor DarkGray
   }
   try {
-    Copy-S3Object -BucketName $driver.bucket -Key $driver.key -LocalFile $local_path -Region $aws_region
+    Copy-S3Object -BucketName $driver.bucket -Key $driver.key -LocalFile $local_path -Region $(if ($driver.region) { $driver.region } else { $aws_region })
     Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $driver.bucket, $driver.key) -ForegroundColor White
   } catch {
     Write-Host -object $_.Exception.Message -ForegroundColor Red
@@ -166,7 +166,7 @@ foreach ($package in $config.packages) {
   $local_path = ('.\{0}' -f [System.IO.Path]::GetFileName($package.key))
   if (-not (Test-Path -Path $local_path -ErrorAction SilentlyContinue)) {
     try {
-      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $aws_region
+      Copy-S3Object -BucketName $package.bucket -Key $package.key -LocalFile $local_path -Region $(if ($package.region) { $package.region } else { $aws_region })
       Write-Host -object ('downloaded {0} from bucket {1} with key {2}' -f (Resolve-Path -Path $local_path), $package.bucket, $package.key) -ForegroundColor White
     } catch {
       Write-Host -object $_.Exception.Message -ForegroundColor Red
