@@ -121,6 +121,12 @@ foreach ($driver in $config.drivers) {
   }
   try {
     if ($driver.extract) {
+      $ext = [System.IO.Path]::GetExtension($local_path)
+      if ($ext -ne '.zip') {
+        $local_path_as_zip = $local_path.Remove(($lastIndex = $local_path.LastIndexOf($ext)),$ext.Length).Insert($lastIndex, '.zip')
+        Rename-Item -Path $local_path -NewName $local_path_as_zip
+        $local_path = $local_path_as_zip
+      }
       Expand-Archive -Path $local_path -DestinationPath $driver_target
       Write-Host -object ('extracted {0} to {1}' -f (Resolve-Path -Path $local_path), (Resolve-Path -Path $driver_target)) -ForegroundColor White
     } else {
