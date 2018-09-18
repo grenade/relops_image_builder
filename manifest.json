@@ -108,9 +108,8 @@
         "extract": true
       },
       {
-        "bucket": "ec2-windows-nvidia-drivers",
-        "region": "us-east-1",
-        "key": "grid-6.2/391.81_grid_win10_server2016_64bit_international.exe",
+        "bucket": "windows-ami-builder",
+        "key": "driver/391.81_grid_win10_server2016_64bit_international.zip",
         "target": "391.81_grid_win10_server2016_64bit_international",
         "inf": "391.81_grid_win10_server2016_64bit_international",
         "extract": true
@@ -226,9 +225,8 @@
         "extract": true
       },
       {
-        "bucket": "ec2-windows-nvidia-drivers",
-        "region": "us-east-1",
-        "key": "grid-6.2/391.81_grid_win10_server2016_64bit_international.exe",
+        "bucket": "windows-ami-builder",
+        "key": "driver/391.81_grid_win10_server2016_64bit_international.zip",
         "target": "391.81_grid_win10_server2016_64bit_international",
         "inf": "391.81_grid_win10_server2016_64bit_international",
         "extract": true
