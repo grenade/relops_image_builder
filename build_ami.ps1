@@ -356,7 +356,7 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
   $stopwatch =  [System.Diagnostics.Stopwatch]::StartNew()
   while (((Get-EC2Instance -InstanceId $instance_id).Instances[0].State.Name -ne 'stopped') -and ($stopwatch.Elapsed.TotalMinutes -lt 180)) {
     if ($last_screenshot_size > 60kb) {
-      $screenshot_frequency = 1
+      $screenshot_frequency = 3
     } else {
       $screenshot_frequency = 30
     }
@@ -369,6 +369,8 @@ if ($import_task_status.SnapshotTaskDetail.Status -ne 'completed') {
         $last_screenshot_size = (Get-Item -Path $screenshot_path).length
         Write-Host -object ('{0:n1}kb screenshot saved to {1}' -f ($last_screenshot_size/1kb), (Resolve-Path -Path $screenshot_path).Path) -ForegroundColor DarkGray
       } catch {
+        $last_screenshot_time = ((Get-Date).ToUniversalTime())
+        $last_screenshot_size = 0
         Write-Host -object $_.Exception.Message -ForegroundColor Red
       }
     }
