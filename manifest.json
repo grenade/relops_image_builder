@@ -349,5 +349,122 @@
         "extract": true
       }
     ]
+  },
+  {
+    "os": "Windows",
+    "version": 1703,
+    "build": {
+      "major": 10,
+      "minor": 0,
+      "release": 15063,
+      "build": 296
+    },
+    "update": "July 2017",
+    "changelog": "https://changewindows.org/build/redstone2/15063/pc#296",
+    "edition": "Enterprise",
+    "language": "en-US",
+    "iso": {
+      "bucket": "windows-ami-builder",
+      "key": "iso/en_windows_10_enterprise_version_1703_updated_july_2017_x64_dvd_10925376.iso"
+    },
+    "vhd": {
+      "bucket": "windows-ami-builder",
+      "key": "vhd/Windows_10_Enterprise_1703_15063_296_en-US_x64_MBR.vhd"
+    },
+    "unattend": "https://raw.githubusercontent.com/grenade/relops_image_builder/master/unattend/Windows10-Professional-en-US.xml",
+    "partition": "MBR",
+    "format": "VHD",
+    "architecture": "x64",
+    "packages": [
+      {
+        "bucket": "windows-ami-builder",
+        "key": "package/EC2Install.zip",
+        "target": "Windows\\Temp",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/Ec2ConfigurationSettings.xml",
+        "target": "Windows\\Temp\\Ec2ConfigurationSettings.xml"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/WallpaperSettings.xml",
+        "target": "Windows\\Temp\\WallpaperSettings.xml"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "package/nxlog-ce-2.10.2102.msi",
+        "target": "Windows\\Temp"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/nxlog-win10.conf",
+        "target": "Windows\\Temp\\nxlog.conf"
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "config/papertrail-bundle.pem",
+        "target": "Windows\\Temp\\papertrail-bundle.pem"
+      }
+    ],
+    "drivers": [
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/aws-pv/xenbus.zip",
+        "target": "xenbus",
+        "inf": "xenbus",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/aws-pv/xeniface.zip",
+        "target": "xeniface",
+        "inf": "xeniface",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/aws-pv/xennet.zip",
+        "target": "xennet",
+        "inf": "xennet",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/aws-pv/xenvbd.zip",
+        "target": "xenvbd",
+        "inf": "xenvbd",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/aws-pv/xenvif.zip",
+        "target": "xenvif",
+        "inf": "xenvif",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/AwsEnaNetworkDriver.zip",
+        "target": "AwsEnaNetworkDriver",
+        "inf": "AwsEnaNetworkDriver\\bin.10.0",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/vac413.zip",
+        "target": "vac413",
+        "inf": "vac413",
+        "extract": true
+      },
+      {
+        "bucket": "windows-ami-builder",
+        "key": "driver/391.81_grid_win10_server2016_64bit_international.zip",
+        "target": "391.81_grid_win10_server2016_64bit_international",
+        "inf": "391.81_grid_win10_server2016_64bit_international",
+        "extract": true
+      }
+    ]
   }
 ]
